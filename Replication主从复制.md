@@ -1,3 +1,4 @@
+@[TOC](Replication主从复制)
 # 简单介绍
 本文具体讲述mysql基于多机器的数据库高可用的一些解决方案。
 - 主从复制：常见方案有PXC以及Replication。 Replication的主从在主库中操作，速度较快，弱一致性，单向异步，一旦stop slave将无法同步；PXC集群速度慢，强一致性，高价值数据，双向同步。
