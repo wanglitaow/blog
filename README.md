@@ -1,7 +1,7 @@
 @[TOC](这里写自定义目录标题)
 
 # 小书匠
-设置栏-绑定-数据存储+图床服务都用`846f71eec9ee06cf83b65c5a0a6c902565c9b18f`作为token,该token在[token地址](https://github.com/settings/tokens)并设置所有权限
+设置栏-绑定-数据存储+图床服务都用`0fe7044e848eeb2d02cf91db026c14f3a466104f`作为token,该token在[token地址](https://github.com/settings/tokens)并设置所有权限
 
 插入图片：直接拖拽并等待自动生成githab地址图床，![hack](https://www.github.com/OneJane/blog/raw/master/小书匠/hack.png)
  
