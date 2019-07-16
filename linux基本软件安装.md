@@ -84,5 +84,87 @@ chown -R git:git learngit.git
 vi /etc/passwd
 git:x:1000:1000::/home/git:/usr/bin/git-shell
 复制客户端的ssh-keygen -t rsa -C "你的邮箱" 获得的id_rsa.pub公钥到/root/.ssh/authorized_keys和/root/.ssh/authorized_keys
-git clone git@101.101.101.101:/usr/local/git/learngit.git
+```
+> gitignore无效的解决方案
+
+``` git rm -r --cached .
+git add .
+git commit -m '.gitignore'
+git push origin master
+*.cache
+*.cache.lock
+*.iml
+*.log
+**/target
+**/logs
+.idea
+**/.project
+**/.settings
+```
+### gitlab安装
+
+``` git config --global http.sslVerify false
+yum -y install curl policycoreutils openssh-server openssh-clients postfix
+systemctl start sshd
+systemctl start postfix
+systemctl enable sshd
+systemctl enable postfix
+curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+yum -y install gitlab-ce    太慢的话使用清华的源，yum makecache再install
+
+vim  /etc/yum.repos.d/gitlab_gitlab-ce.repo
+[gitlab-ce]
+name=gitlab-ce
+baseurl=http://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el6
+repo_gpgcheck=0
+gpgcheck=0
+enabled=1
+gpgkey=https://packages.gitlab.com/gpg.key
+
+mkdir -p /etc/gitlab/ssl
+openssl genrsa -out "/etc/gitlab/ssl/gitlab.example.com.key" 2048
+
+openssl req -new -key "/etc/gitlab/ssl/gitlab.example.com.key" -out "/etc/gitlab/ssl/gitlab.example.com.csr"
+Country Name (2 letter code) [XX]:cn
+State or Province Name (full name) []:bj
+Locality Name (eg, city) (Default City]:bj
+Organization Name (eg, company) [Default Company Ltd]:
+Organizational Unit Name (eg, section) []:
+Common Name (eg, your name or your server's hostname) []:gitlab.example.com
+Email Address (]:admin@example.com
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password [):123456
+An optional company name []:
+```
+### GitLab基本配置
+
+``` openssl x509 -req -days 3650 -in "/etc/gitlab/ssl/gitlab.example.com.csr" -signkey "/etc/gitlab/ssl/gitlab.example.com.key" -out "/etc/gitlab/ssl/gitlab.example.com.crt"
+openssl dhparam -out /etc/gitlab/ssl/dhparams.pem 2048
+chmod 600 /etc/gitlab/ssl/*
+
+vim /etc/gitlab/gitlab.rb     
+将external_url 'http://gitlab.example.com'的http修改为https
+将# nginx['redirect_http_to_https'] = false的注释去掉，修改为nginx['redirect_http_to_https'] = true
+将# nginx['ssl_certificate'] = "/etc/gitlab/ssl/#{node['fqdn']}.crt"修改为# nginx['ssl_certificate'] = "/etc/gitlab/ssl/gitlab.example.com.crt"
+将# nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/#{node['fqdn']}.key"修改为# nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/gitlab.example.com.key"
+将# nginx['ssl_dhparam'] = nil 修改为# nginx['ssl_dhparam'] = "/etc/gitlab/ssl/dhparams.pem"
+　　
+gitlab-ctl reconfigure
+vim /var/opt/gitlab/nginx/conf/gitlab-http.conf
+    在server_name下添加如下配置内容：rewrite ^(.*)$ https://$host$1 permanent;
+重启gitlab，使配置生效,gitlab-ctl restart，如遇到访问错误直接等待启动完成
+修改本地hosts文件    将gitlab服务器的地址添加 gitlab.example.com
+初始化时修改管理员密码，root 12345678
+git -c http.sslVerify=false clone https://gitlab.example.com/root/test-repo.git
+git add .
+#git config --global user.email "admin@example.com"
+#git config --global user.name "admin"
+git commit -m 'init'
+git -c http.sslVerify=false pull origin master
+git -c http.sslVerify=false push origin master
+
+https://gitlab.example.com/admin/system_info        查看系统资源状态值
+https://gitlab.example.com/admin/logs        其中application.log记录了git用户的记录，production.log实时查看所有的访问链接
+https://gitlab.example.com/admin/users/new       创建用户
 ```
