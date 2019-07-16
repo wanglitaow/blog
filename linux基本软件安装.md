@@ -1,3 +1,4 @@
+@[TOC](Linux常用软件安装)
 # jdk+maven
 
 ``` tar zxf jdk-8u60-linux-x64.tar.gz -C /usr/local/
