@@ -168,3 +168,25 @@ https://gitlab.example.com/admin/system_info        查看系统资源状态值
 https://gitlab.example.com/admin/logs        其中application.log记录了git用户的记录，production.log实时查看所有的访问链接
 https://gitlab.example.com/admin/users/new       创建用户
 ```
+![创建用户1](https://www.github.com/OneJane/blog/raw/master/小书匠/创建用户1.png)
+![创建用户2](https://www.github.com/OneJane/blog/raw/master/小书匠/创建用户2.png)
+https://gitlab.example.com/root/test-repo/project_members 修改指定项目的成员，在项目的manage access中，修改登录密码
+![用户设置1](https://www.github.com/OneJane/blog/raw/master/小书匠/用户设置1.png)
+![用户设置2](https://www.github.com/OneJane/blog/raw/master/小书匠/用户设置2.png)
+![用户设置3](https://www.github.com/OneJane/blog/raw/master/小书匠/用户设置3.png)
+
+``` dev 对项目相关操作
+rm -rf test-repo/
+git -c http.sslVerify=false clone https://gitlab.example.com/root/test-repo.git
+    dev
+    12345678
+cd test-repo/
+git checkout -b release-1.0
+git add .
+git commit -m 'release-1.0'
+git -c http.sslVerify=false push origin release-1.0
+dev登录后create merge request
+lead登录将受到release-1.0的merge申请，点击merge后可以填写comment并提交
+```
+![合并请求1](https://www.github.com/OneJane/blog/raw/master/小书匠/合并请求1.png)
+![合并请求2](https://www.github.com/OneJane/blog/raw/master/小书匠/合并请求2.png)
