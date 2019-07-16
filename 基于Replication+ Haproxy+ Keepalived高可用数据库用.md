@@ -1,3 +1,4 @@
+@[TOC](基于Replication+ Haproxy+ Keepalived高可用数据库用.md)
 # Haproxy 负载均衡
 haproxy提供负载均衡，并自动切换故障容器
 vim /usr/local/docker/mysql/haproxy/haproxy.cfg 编写配置文件
