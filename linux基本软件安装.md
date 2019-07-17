@@ -190,3 +190,7 @@ lead登录将受到release-1.0的merge申请，点击merge后可以填写comment
 ```
 ![合并请求1](https://www.github.com/OneJane/blog/raw/master/小书匠/合并请求1.png)
 ![合并请求2](https://www.github.com/OneJane/blog/raw/master/小书匠/合并请求2.png)
+
+详情见：
+https://github.com/OneJane/blog
+https://www.jianshu.com/u/b2a63c970be4
