@@ -1,4 +1,4 @@
-@[TOC](基于Replication+ Haproxy+ Keepalived高可用数据库用.md)
+@[TOC]
 # Haproxy 负载均衡
 haproxy提供负载均衡，并自动切换故障容器
 vim /usr/local/docker/mysql/haproxy/haproxy.cfg 编写配置文件
@@ -167,3 +167,7 @@ service keepalived start
 ping 192.168.3.222
 ```
 访问192.168.3.222 189 root 123456
+
+详情见：
+https://github.com/OneJane/blog
+https://www.jianshu.com/u/b2a63c970be4
