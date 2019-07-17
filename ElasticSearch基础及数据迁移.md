@@ -122,12 +122,19 @@ PUT 192.168.2.6:9200/test          新建索引
 }
 
 
-192.168.2.6:9200/test/doc/mapping  插入数据
+192.168.2.7:1800/test/doc/{_id}  插入数据，_id不加默认随机字符串
 {
     "jjbh": "4654132465",
-    "bccljg": "阿斯顿偶",
-    "bjnr": "启动第三方发且uqwejoi",
-    "cjlb": "啊是的后果iweiuwed"
+    "bccljg": "我是一名合格的程序员",
+    "bjnr": "今天天气真的好啊",
+    "cjlb": "天上地下飞禽走兽"
+}
+192.168.2.7:1800/test/doc/{_id}        更新
+{
+    "jjbh": "11",
+    "bccljg": "我是一名合格的程序员",
+    "bjnr": "今天天气真的好啊",
+    "cjlb": "天上地下飞禽走兽"
 }
 
 
@@ -158,7 +165,45 @@ POST 192.168.2.5:1800/test/doc 全局加ik分词器
         }
     }
 }
+
+POST 192.168.2.5:1800/test/doc/_search 查询
+POST 192.168.2.5:1800/test/doc/_delete_by_query 删除
+
+精确查询/删除
+{
+  "query":{
+    "term":{
+        "bccljg.keyword":"我是一名合格的程序员"
+    }
+  }
+}
+模糊查询/删除
+{
+    "query": {
+        "match": {
+            "bccljg": "合格"
+        }
+    }
+}
+正则模糊查询
+{
+    "query": {
+        "regexp": {
+            "bccljg.keyword": ".*我是.*"
+        }
+    }
+}
+文本开头查询
+{
+    "query": {
+        "prefix": {
+            "bccljg.keyword": "我是"
+        }
+    }
+}
 ```
+同步后的数据结构
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563358966961.png)
 
 详情见：
 https://github.com/OneJane/blog
