@@ -229,3 +229,7 @@ start slave ;
             Slave_SQL_Running: Yes
 
 双向验证，数据同步
+
+详情见：
+https://github.com/OneJane/blog
+https://www.jianshu.com/u/b2a63c970be4
