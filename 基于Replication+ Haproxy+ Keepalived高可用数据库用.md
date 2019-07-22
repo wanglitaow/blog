@@ -2,7 +2,8 @@
 # Haproxy 负载均衡
 haproxy提供负载均衡，并自动切换故障容器
 vim /usr/local/docker/mysql/haproxy/haproxy.cfg 编写配置文件
-``` global
+``` 
+global
     #工作目录
     chroot /usr/local/etc/haproxy
     #日志文件，使用rsyslog服务中local5日志设备（/var/log/local5），等级info
@@ -61,7 +62,8 @@ listen  proxy-mysql
 ```
 在两台Replication组建的mysql集群同时创建mysql_cluster的haproxy容器，形成集群。
 
-``` docker run -itd -v /usr/local/docker/mysql/haproxy:/usr/local/etc/haproxy --name mysql_cluster --privileged --net host haproxy
+``` 
+docker run -itd -v /usr/local/docker/mysql/haproxy:/usr/local/etc/haproxy --name mysql_cluster --privileged --net host haproxy
 docker exec -it ht-mysql-master mysql -u root -p 
 drop user 'haproxy'@'%';
 create user 'haproxy'@'%' IDENTIFIED BY '';
@@ -122,7 +124,8 @@ ping 192.168.3.222
 ## 192.168.3.225
 docker exec -it mysql_cluster bash        进入h2
 
-``` mv /etc/apt/sources.list sources.list.bak
+``` 
+mv /etc/apt/sources.list sources.list.bak
 echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse">>/etc/apt/sources.list
 echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse">>/etc/apt/sources.list
 echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse">>/etc/apt/sources.list
