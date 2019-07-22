@@ -118,7 +118,9 @@ vrrp_instance VI_1 {
 } 
 service keepalived start
 
+```
 由于docker内的虚拟ip不能被外界访问借助宿主机keepalived映射外网可以访问的虚拟ip，
+``` 
 exit
 yum install keepalived -y
 mv /etc/keepalived/keepalived.conf /etc/keepalived/keepalived.conf.bak
@@ -174,9 +176,13 @@ virtual_server 192.168.2.155 183 {
 #/sbin/ip addr del 192.168.12.100/32 dev enp1s0f0        删除虚拟ip
 
 ```
+
+
 > 如docker0没有则重启docker，再次检查创建
 systemctl daemon-reload
 systemctl restart docker
+
+
 
 访问 http://192.168.2.155:183/nacos/#/login nacos nacos
 
