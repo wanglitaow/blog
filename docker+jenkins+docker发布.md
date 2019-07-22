@@ -64,6 +64,8 @@ parent.relativePath修改为<relativePath />，发布单个服务时设定一个
 export app_name="ht-micro-record-service-note-consumer"
 export app_version="1.0.0-SNAPSHOT"
 sh /usr/local/docker/ht-micro-record/deploy.sh
+
+``` bash
 #!/bin/bash
 
 DATE=`date +%F-%H-%M-%S`
@@ -78,13 +80,20 @@ elif docker ps -a | grep $app_name;then
 else
   docker run -di --name=$app_name --net=host 192.168.2.5:5000/$app_name:$app_version
 fi
-
-
+```
 
 vim /usr/local/bin/dokill
+
+``` perl
 docker images | grep -e $*|awk '{print $3}'|sed '2p'|xargs docker rmi
 chmod a+x /usr/local/bin/dokill
 dokill tensquare_recruit
+```
+
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563789548337.png)
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563789561923.png)
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563789568408.png)
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563789572978.png)
 
 Q1:Failed to execute goal on project  : Could not resolve dependencies for
 
