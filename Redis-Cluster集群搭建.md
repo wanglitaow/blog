@@ -47,6 +47,69 @@ services:
     environment:
      - REDIS_PORT=8003
 ```
+docker-compose up -d
+## 192.168.2.7
+vim /usr/local/docker/redis/docker-compose.yml
+
+``` version: '3'
+ 
+services:
+  redis1:
+    image: publicisworldwide/redis-cluster
+    network_mode: host
+    container_name: redis4
+    restart: always
+    volumes:
+     - ./8004/data:/data
+    environment:
+     - REDIS_PORT=8004
+  
+  
+  redis2:
+    image: publicisworldwide/redis-cluster
+    network_mode: host
+    container_name: redis5
+    restart: always
+    volumes:
+     - ./8005/data:/data
+    environment:
+     - REDIS_PORT=8005
+  
+  
+  redis3:
+    image: publicisworldwide/redis-cluster
+    network_mode: host
+    container_name: redis6
+    restart: always
+    volumes:
+     - ./8006/data:/data
+    environment:
+     - REDIS_PORT=8006
+```
+docker-compose up -d
+# 启动方式
+## 直接启动
+``` docker run --rm -it inem0o/redis-trib create --replicas 1 192.168.2.5:8001 192.168.2.5:8002 192.168.2.5:8003 192.168.2.7:8004 192.168.2.7:8005 192.168.2.7:8006
+
+docker exec -it redis1 redis-cli -h 127.0.0.1 -p 8001 -c
+set a 100
+cluster info
+cluster nodes
+```
+> 自动指定master slave
+## 指定master
+
+``` docker run --rm -it inem0o/redis-trib create  192.168.2.5:8001 192.168.2.5:8002 192.168.2.5:8003
+
+docker run --rm -it inem0o/redis-trib add-node --slave --master-id 84c3b7ecbc4933e1368a6927f26c79ecc76810b3 192.168.2.7:8004 192.168.2.5:8001
+docker run --rm -it inem0o/redis-trib add-node --slave --master-id 716f11f2971e9494183937abd61f7a4baf0b3959 192.168.2.7:8005 192.168.2.5:8002 
+docker run --rm -it inem0o/redis-trib add-node --slave --master-id c93060613a8f1531c82b97d97eeac402048f0b25 192.168.2.7:8006 192.168.2.5:8003
+
+
+docker run --rm -it inem0o/redis-trib info 192.168.2.5:8001
+docker run --rm -it inem0o/redis-trib help
+```
+
 
 详情见：
 https://github.com/OneJane/blog
