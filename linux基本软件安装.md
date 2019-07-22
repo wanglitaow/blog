@@ -1,7 +1,8 @@
 @[TOC](Linux常用软件安装)
 # jdk+maven
 
-``` tar zxf jdk-8u60-linux-x64.tar.gz -C /usr/local/
+``` 
+tar zxf jdk-8u60-linux-x64.tar.gz -C /usr/local/
 tar zxf apache-maven-3.6.1-bin.tar.gz -C /usr/local/
 vim /etc/profile
 JAVA_HOME=/usr/local/jdk1.8.0_60
@@ -13,7 +14,8 @@ export JAVA_HOME JRE_HOME PATH CLASSPATH MAVEN_HOME
 ```
 # Nexus
 
-``` vim /usr/local/docker/nexus/docker-compose.yml
+``` 
+vim /usr/local/docker/nexus/docker-compose.yml
 version: '3.1'
 services:
   nexus:
@@ -30,7 +32,8 @@ cat data/admin.password        查看密码，账户为admin
 http://192.168.2.5:182/ admin 123456
 在maven的settings.xml中配置Nexus认证节点
 
-``` <settings
+``` 
+<settings
         xmlns="http://maven.apache.org/SETTINGS/1.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
@@ -157,7 +160,8 @@ http://192.168.2.5:182/ admin 123456
 
 ## 上传第三方jar
 Nexus 3.0 不支持页面上传，可使用 maven 命令：
-``` mvn deploy:deploy-file
+``` 
+mvn deploy:deploy-file
   -DgroupId=com.github.axet
   -DartifactId=kaptcha
   -Dversion=0.0.9
@@ -171,7 +175,8 @@ Nexus 3.0 不支持页面上传，可使用 maven 命令：
 # GitLab
 ## 方案1
 
-``` docker run \
+``` 
+docker run \
     --publish 1443:443 --publish 180:80 --publish 122:22 \
     --name gitlab \
     --volume /usr/local/docker/gitlab/config:/etc/gitlab \
@@ -181,7 +186,8 @@ Nexus 3.0 不支持页面上传，可使用 maven 命令：
 ```
 ## 方案2
 vim /usr/local/docker/gitlab/docker-compose.yml
-``` version: '3'
+``` 
+version: '3'
 services:
     gitlab:
       image: 'twang2218/gitlab-ce-zh:10.5'
@@ -230,7 +236,8 @@ docker-compose restart
 ## 方案3
 ### 安装git
 
-``` yum –y install git
+``` 
+yum –y install git
 cd /usr/local
 mkdir git
 cd git
@@ -260,7 +267,8 @@ git push origin master
 ```
 ### gitlab安装
 
-``` git config --global http.sslVerify false
+``` 
+git config --global http.sslVerify false
 yum -y install curl policycoreutils openssh-server openssh-clients postfix
 systemctl start sshd
 systemctl start postfix
@@ -296,7 +304,8 @@ An optional company name []:
 ```
 ### GitLab基本配置
 
-``` openssl x509 -req -days 3650 -in "/etc/gitlab/ssl/gitlab.example.com.csr" -signkey "/etc/gitlab/ssl/gitlab.example.com.key" -out "/etc/gitlab/ssl/gitlab.example.com.crt"
+``` 
+openssl x509 -req -days 3650 -in "/etc/gitlab/ssl/gitlab.example.com.csr" -signkey "/etc/gitlab/ssl/gitlab.example.com.key" -out "/etc/gitlab/ssl/gitlab.example.com.crt"
 openssl dhparam -out /etc/gitlab/ssl/dhparams.pem 2048
 chmod 600 /etc/gitlab/ssl/*
 
@@ -349,7 +358,8 @@ lead登录将受到release-1.0的merge申请，点击merge后可以填写comment
 ![合并请求2](https://www.github.com/OneJane/blog/raw/master/小书匠/合并请求2.png)
 # RocketMQ安装
 
-``` mkdir /usr/local/docker/RocketMQ
+``` 
+mkdir /usr/local/docker/RocketMQ
 vim docker-compose.yml
 version: '3.5'
 services:
@@ -472,11 +482,13 @@ mkdir /usr/local/repository
 ```
 ## 方案1
 
-``` docker run -d -p 181:8080 -p 50000:50000 -v jenkins:/var/jenkins_home -v /etc/localtime:/etc/localtime --name jenkins docker.io/jenkins/jenkins  
+``` 
+docker run -d -p 181:8080 -p 50000:50000 -v jenkins:/var/jenkins_home -v /etc/localtime:/etc/localtime --name jenkins docker.io/jenkins/jenkins  
 ```
 ## 方案2
 
-``` mkdir /usr/local/docker/jenkins -p
+``` 
+mkdir /usr/local/docker/jenkins -p
 vim docker-compose.yml
 jenkins:
     container_name: jenkins
@@ -495,7 +507,8 @@ docker-compose up -d
 ```
 ## 基本使用
 
-``` http://192.168.2.5:181/login
+``` 
+http://192.168.2.5:181/login
 docker exec jenkins tail /var/jenkins_home/secrets/initialAdminPassword    
 首次启动太慢 /var/jenkins_home/hudson.model.UpdateCenter.xml更改地址http://mirror.xmission.com/jenkins/updates/update-center.json
 
