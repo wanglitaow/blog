@@ -12,13 +12,15 @@ Es多个节点选举一个为master，管理和切换主副shard，若宕机则�
 
 # 多机器集群搭建
 
-``` vi /etc/sysctl.conf
+``` 
+vi /etc/sysctl.conf
 vm.max_map_count=262144
 sysctl -p
 ```
 ## Node1 192.168.2.5
 
-``` mkdir /usr/local/docker/ElasticSearch/data -p && chmod 777 /usr/local/docker/ElasticSearch/data
+``` 
+mkdir /usr/local/docker/ElasticSearch/data -p && chmod 777 /usr/local/docker/ElasticSearch/data
 mkdir /usr/local/docker/ElasticSearch/config/ -p && cd /usr/local/docker/ElasticSearch/config/
 
 
@@ -45,7 +47,8 @@ docker restart es-node1
 ```
 ## Node2 192.168.2.6
 
-``` mkdir /usr/local/docker/ElasticSearch/data -p && chmod 777 /usr/local/docker/ElasticSearch/data
+``` 
+mkdir /usr/local/docker/ElasticSearch/data -p && chmod 777 /usr/local/docker/ElasticSearch/data
 mkdir /usr/local/docker/ElasticSearch/config/ -p && cd /usr/local/docker/ElasticSearch/config/
 vi es.yml
 cluster.name: elasticsearch-cluster
@@ -76,7 +79,8 @@ curl 192.168.2.7:1800/_cat/indices?v	查看所有索引信息
 ```
 常见参数使用：
 
-``` ./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_record_analyze -y record_test --copy_settings --copy_mappings --shards=4 -w=5 -b=10 -c 10000;
+``` 
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_record_analyze -y record_test --copy_settings --copy_mappings --shards=4 -w=5 -b=10 -c 10000;
 ```
 ## 数据迁移完美方案
 通过两集群都建立同样索引，保证mappings和settings一致，再同步数据
