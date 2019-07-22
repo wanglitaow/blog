@@ -1,7 +1,8 @@
 @[TOC]
 
 # 搭建
-``` wget https://github.com/xuxueli/xxl-job/archive/2.1.0.tar.gz
+``` 
+wget https://github.com/xuxueli/xxl-job/archive/2.1.0.tar.gz
 tar zxf xxl-job-2.1.0.tar.gz
 docker cp xxl-job-2.1.0/doc/db/tables_xxl_job.sql ht-mysql-slave:/root/
 docker exec -it ht-mysql-slave mysql -u root -p
@@ -18,7 +19,8 @@ http://192.168.2.7:183/xxl-job-admin/ admin 123456
 
 # 开发
 
-``` <dependency>
+``` 
+<dependency>
     <groupId>com.xuxueli</groupId>
     <artifactId>xxl-job-core</artifactId>
     <version>2.1.0</version>
@@ -26,7 +28,8 @@ http://192.168.2.7:183/xxl-job-admin/ admin 123456
 ```
 ht-micro-record-service-job/pom.xml
 
-``` <parent>
+``` 
+<parent>
     <groupId>com.htdc</groupId>
     <artifactId>ht-micro-record-dependencies</artifactId>
     <version>1.0.0-SNAPSHOT</version>
@@ -156,7 +159,8 @@ ht-micro-record-service-job/pom.xml
 ```
 application.yaml
 
-``` spring:
+``` 
+spring:
   application:
     name: ht-micro-record-service-job
   datasource:
@@ -199,7 +203,8 @@ xxl:
 ```
 com.ht.micro.record.service.job.JobServiceApplication
 
-``` @SpringBootApplication(scanBasePackages = "com.ht.micro.record")
+``` 
+@SpringBootApplication(scanBasePackages = "com.ht.micro.record")
 @EnableDiscoveryClient
 @MapperScan(basePackages = "com.ht.micro.record.commons.mapper")
 public class JobServiceApplication {
@@ -213,7 +218,8 @@ public class JobServiceApplication {
 ```
 com.ht.micro.record.service.job.config.XxlJobConfig
 
-``` @Configuration
+``` 
+@Configuration
 @ComponentScan(basePackages = "com.ht.micro.record.service.job.handler")
 public class XxlJobConfig {
     private Logger logger = LoggerFactory.getLogger(XxlJobConfig.class);
@@ -270,7 +276,8 @@ public class XxlJobConfig {
 ```
 com.ht.micro.record.service.job.handler.TestJobHandler
 
-``` @JobHandler(value="testJobHandler")
+``` 
+@JobHandler(value="testJobHandler")
 @Component
 public class TestJobHandler extends IJobHandler {
 
