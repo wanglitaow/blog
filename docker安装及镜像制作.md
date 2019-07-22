@@ -68,7 +68,8 @@ docker run -itd myimage:test /bin/bash -c "命令1;命令2"        启动容器�
 # 安装Registry私服
 ## 方案1
 
-``` docker run -di --name=registry -p 5000:5000 docker.io/registry
+``` 
+docker run -di --name=registry -p 5000:5000 docker.io/registry
 ```
 访问 http://192.168.2.5:5000/v2/_catalog
 
