@@ -3,7 +3,8 @@
 
 ## 基本配置
 
-``` yum install -y vim lrzsz git
+``` 
+yum install -y vim lrzsz git
 setenforce 0
 vim /etc/selinux/config
 SELINUX=disabled
@@ -11,7 +12,8 @@ systemctl stop firewalld
 systemctl disable firewalld
 ```
 ## centos
-``` yum remove docker \
+``` 
+yum remove docker \
                   docker-client \
                   docker-client-latest \
                   docker-common \
@@ -30,7 +32,8 @@ systemctl restart docker
 ```
 ## ubuntu
 
-``` apt-get update
+``` 
+apt-get update
 apt-get -y install apt-transport-https ca-certificates curl software-properties-common
 # step 2: 安装GPG证书
 curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
@@ -49,7 +52,8 @@ sudo apt-get -y install docker-ce
 ```
 ## Docker配置及基本使用
 
-``` vim /etc/docker/daemon.json
+``` 
+vim /etc/docker/daemon.json
 {
   "registry-mirrors": ["https://3gki6pei.mirror.aliyuncs.com"],
   "storage-driver":"devicemapper"
@@ -121,12 +125,14 @@ docker start registry
 ```
 ## 制作镜像
 
-``` mkdir -p /usr/local/dockerjdk8 && cd /usr/local/dockerjdk8
+``` 
+mkdir -p /usr/local/dockerjdk8 && cd /usr/local/dockerjdk8
 ```
 sz jdk-8u60-linux-x64.tar.gz 传到该目录下
 vim Dockerfile
 
-``` #依赖镜像名称和ID
+``` 
+#依赖镜像名称和ID
 FROM docker.io/centos:7
 #指定镜像创建者信息
 MAINTAINER OneJane
@@ -144,7 +150,8 @@ ENV PATH $JAVA_HOME/bin:$PATH
 <kbd>docker build -t='jdk1.8' .</kbd>
 ## 上传到私服
 
-``` docker commit 6ea1085dfc2a pxc:v1.0        将镜像保存本地
+``` 
+docker commit 6ea1085dfc2a pxc:v1.0        将镜像保存本地
 docker commit -m  "容器说明"   -a  "OneJane"   [CONTAINER ID]  [给新的镜像命名]        将容器打包成镜像
 docker export registry > /home/registry.tar        将容器打成tar包
 scp /home/registry.tar root@192.168.2.7:/root
@@ -174,7 +181,8 @@ exec "$@"
 ```
 vim redis.conf
 
-``` #端口
+``` 
+#端口
 port REDIS_PORT
 #开启集群
 cluster-enabled yes
@@ -190,7 +198,8 @@ appendonly yes
 ```
 vi Dockerfile
 
-``` #基础镜像
+```
+#基础镜像
 FROM redis
 #修复时区
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -215,7 +224,8 @@ CMD ["redis-server", "/usr/local/etc/redis.conf"]
 <kbd>docker build -t codewj/redis-cluster:1.0 . </kbd>
 ## 上传到私服
 
-``` docker tag codewj/redis-cluster:1.0 192.168.2.5:5000/codewj-redis-cluster
+```
+docker tag codewj/redis-cluster:1.0 192.168.2.5:5000/codewj-redis-cluster
 docker push 192.168.2.5:5000/codewj-redis-cluster
 ```
 详情见：
