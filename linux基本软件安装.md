@@ -11,6 +11,130 @@ PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin:$MAVEN_HOME/bin
 CLASSPATH=:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib/dt.jar
 export JAVA_HOME JRE_HOME PATH CLASSPATH MAVEN_HOME
 ```
+# Nexus
+
+``` vim /usr/local/docker/nexus/docker-compose.yml
+version: '3.1'
+services:
+  nexus:
+    restart: always
+    image: sonatype/nexus3
+    container_name: nexus
+    ports:
+      - 182:8081
+    volumes:
+      - /usr/local/docker/nexus/data:/nexus-data
+docker-compose up -d
+cat data/admin.password        查看密码，账户为admin
+```
+http://192.168.2.5:182/ admin 123456
+在maven的settings.xml中配置Nexus认证节点
+
+``` <settings
+        xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <!-- localRepository
+   | The path to the local repository maven will use to store artifacts.
+   |
+   | Default: ${user.home}/.m2/repository
+  <localRepository>/path/to/local/repo</localRepository>
+  -->
+    <localRepository>E:\apache-maven-3.6.1\respository</localRepository>
+    <servers>  
+        <server>  
+          <id>nexus-releases</id>  
+          <username>admin</username>  
+          <password>123456</password>  
+        </server>  
+        <server>  
+          <id>nexus-snapshots</id>  
+          <username>admin</username>  
+          <password>123456</password>  
+        </server>  
+    </servers>  
+  
+  <mirrors>   
+    <mirror>   
+      <id>nexus-releases</id>   
+      <mirrorOf>maven-releases</mirrorOf>   
+      <url>http://192.168.2.5:182/repository/maven-releases/</url>   
+    </mirror>  
+    <mirror>   
+      <id>nexus-snapshots</id>   
+      <mirrorOf>maven-snapshots</mirrorOf>   
+      <url>http://192.168.2.5:182/repository/maven-snapshots/</url>   
+    </mirror>    
+    <mirror>
+        <id>nexus-aliyun</id>
+        <mirrorOf>central</mirrorOf>
+        <name>Nexus aliyun</name>
+        <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+    </mirror>
+  </mirrors>   
+   
+  <profiles>  
+   <profile>  
+      <id>nexus</id>  
+      <repositories>  
+        <repository>  
+          <id>nexus-releases</id>  
+          <url>http://192.168.2.5:182/repository/maven-releases/</url>  
+          <releases><enabled>true</enabled></releases>  
+          <snapshots><enabled>true</enabled></snapshots>  
+        </repository>  
+        <repository>  
+          <id>nexus-snapshots</id>  
+          <url>http://192.168.2.5:182/repository/maven-snapshots/</url>  
+          <releases><enabled>true</enabled></releases>  
+          <snapshots><enabled>true</enabled></snapshots>  
+        </repository>  
+        <repository>
+            <id>nexus-aliyun</id>
+            <name>Nexus aliyun</name>
+            <layout>default</layout>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+      </repositories>  
+      <pluginRepositories>  
+         <pluginRepository>  
+                <id>nexus-releases</id>  
+                 <url>http://192.168.2.5:182/repository/maven-releases/</url>  
+                 <releases><enabled>true</enabled></releases>  
+                 <snapshots><enabled>true</enabled></snapshots>  
+               </pluginRepository>  
+               <pluginRepository>  
+                 <id>nexus-snapshots</id>  
+                  <url>http://192.168.2.5:182/repository/maven-snapshots/</url>  
+                <releases><enabled>true</enabled></releases>  
+                 <snapshots><enabled>true</enabled></snapshots>  
+             </pluginRepository>  
+             <pluginRepository>
+                <id>aliyun</id>
+                <name>aliyun</name>
+                <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>false</enabled>
+                </snapshots>
+                </pluginRepository>
+         </pluginRepositories>  
+    </profile>  
+  </profiles>  
+  <activeProfiles>  
+      <activeProfile>nexus</activeProfile>  
+  </activeProfiles>  
+</settings>
+```
+
 # GitLab
 ## 方案1
 
