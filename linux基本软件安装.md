@@ -275,6 +275,45 @@ docker-compose up -d
 docker-compose down
 ```
 
+# Jenkins
+## 方案0
+
+``` dts
+rpm -qa|grep jenkins    搜索已安装
+rpm -e --nodeps jenkins-2.83-1.1.noarch
+find / -name jenkins*|xargs rm -rf
+rpm -ivh jdk-8u171-linux-x64.rpm        安装java
+http://mirrors.jenkins.io/redhat/jenkins-2.180-1.1.noarch.rpm
+rpm -ivh jenkins-2.180-1.1.noarch.rpm       安装jenkins新版本
+vi /etc/sysconfig/jenkins
+JENKINS_USER="root"
+JENKINS_PORT="181"
+vim /etc/rc.d/init.d/jenkins 修改candidates
+/usr/local/jdk1.8.0_60/bin/java
+systemctl daemon-reload
+systemctl restart jenkins
+http://192.168.2.5:181
+cat /var/lib/jenkins/secrets/initialAdminPassword    初始密码串并安装默认的插件
+vim /var/lib/jenkins/hudson.model.UpdateCenter.xml    必须在填写完密码后修改
+改https为http或者改为http://mirror.xmission.com/jenkins/updates/update-center.json
+systemctl restart jenkins
+若页面空白/var/lib/jenkins/config.xml
+<authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
+<securityRealm class="hudson.security.SecurityRealm$None"/>
+
+
+
+tar zxvf apache-maven-3.3.9-bin.tar.gz
+mv apache-maven-3.3.9 /usr/local/maven
+vim /usr/local/maven/conf/settings.xml
+<localRepository>/usr/local/repository</localRepository>
+mkdir /usr/local/repository
+
+系统管理-全局工具配置:/usr/local/apache-maven-3.6.1    /usr/java/jdk1.8.0_171-amd64  /usr/local/apache-maven-3.6.1/conf/settings.xml
+安装插件：Maven Integration plugin，GitHub plugin，Git plugin
+新建任务时，丢弃旧的构建，保持构建的天数3，保持构建的最大个数5
+```
+
 详情见：
 https://github.com/OneJane/blog
 https://www.jianshu.com/u/b2a63c970be4
