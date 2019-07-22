@@ -134,7 +134,7 @@ http://192.168.2.5:182/ admin 123456
   </activeProfiles>  
 </settings>
 ```
-
+地址在http://192.168.2.5:182/#admin/repository/repositories中查看URL idea配置maven,并开启always update snapshots
 # GitLab
 ## 方案1
 
