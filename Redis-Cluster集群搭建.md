@@ -109,6 +109,79 @@ docker run --rm -it inem0o/redis-trib add-node --slave --master-id c93060613a8f1
 docker run --rm -it inem0o/redis-trib info 192.168.2.5:8001
 docker run --rm -it inem0o/redis-trib help
 ```
+> 若同一台宿主机，不想使用host模式同一台，也可以把network_mode去掉，但就要加ports映射。redis-cluster的节点端口共分为2种，一种是节点提供服务的端口，如6379；一种是节点间通信的端口，固定格式为：10000+6379。
+
+``` docker-compose.yml
+version: '3'
+
+
+services:
+redis1:
+  image: publicisworldwide/redis-cluster
+  restart: always
+  volumes:
+   - /app/app/redis/8001/data:/data
+  environment:
+   - REDIS_PORT=8001
+  ports:
+    - '8001:8001'
+    - '18001:18001'
+    
+redis2:
+  image: publicisworldwide/redis-cluster
+  restart: always
+  volumes:
+   - /app/app/redis/8002/data:/data
+  environment:
+   - REDIS_PORT=8002
+  ports:
+    - '8002:8002'
+    - '18002:18002'
+    
+redis3:
+  image: publicisworldwide/redis-cluster
+  restart: always
+  volumes:
+   - /app/app/redis/8003/data:/data
+  environment:
+   - REDIS_PORT=8003
+  ports:
+    - '8003:8003'
+    - '18003:18003'
+    
+redis4:
+  image: publicisworldwide/redis-cluster
+  restart: always
+  volumes:
+   - /app/app/redis/8004/data:/data
+  environment:
+   - REDIS_PORT=8004
+  ports:
+    - '8004:8004'
+    - '18004:18004'
+    
+redis5:
+  image: publicisworldwide/redis-cluster
+  restart: always
+  volumes:
+   - /app/app/redis/8005/data:/data
+  environment:
+   - REDIS_PORT=8005
+  ports:
+    - '8005:8005'
+    - '18005:18005'
+    
+redis6:
+  image: publicisworldwide/redis-cluster
+  restart: always
+  volumes:
+   - /app/app/redis/8006/data:/data
+  environment:
+   - REDIS_PORT=8006
+  ports:
+    - '8006:8006'
+    - '18006:18006'
+```
 
 
 详情见：
