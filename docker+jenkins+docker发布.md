@@ -103,7 +103,8 @@ Q2: repackage failed: Unable to find main class -> [Help 1]
 
 > 构建显示缺少主类
 
-``` @SpringBootApplication
+``` 
+@SpringBootApplication
 public class CommonsApplication {
     public static void main(String[] args) {
 
