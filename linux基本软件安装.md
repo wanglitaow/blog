@@ -313,6 +313,67 @@ mkdir /usr/local/repository
 安装插件：Maven Integration plugin，GitHub plugin，Git plugin
 新建任务时，丢弃旧的构建，保持构建的天数3，保持构建的最大个数5
 ```
+## 方案1
+
+``` docker run -d -p 181:8080 -p 50000:50000 -v jenkins:/var/jenkins_home -v /etc/localtime:/etc/localtime --name jenkins docker.io/jenkins/jenkins  
+```
+## 方案2
+
+``` mkdir /usr/local/docker/jenkins -p
+vim docker-compose.yml
+jenkins:
+    container_name: jenkins
+    image: jenkinsci/jenkins:2.14
+    ports:
+        - "181:8080"
+        - "50000:50000"
+    environment:
+        - JAVA_OPTS=-Duser.timezone=Asia/Shanghai
+    volumes:
+        - $PWD/jenkins_home:/var/jenkins_home
+    restart: always
+mkdir -p jenkins_home
+chown 1000:1000 jenkins_home
+docker-compose up -d
+```
+## 基本使用
+
+``` http://192.168.2.5:181/login
+docker exec jenkins tail /var/jenkins_home/secrets/initialAdminPassword    
+首次启动太慢 /var/jenkins_home/hudson.model.UpdateCenter.xml更改地址http://mirror.xmission.com/jenkins/updates/update-center.json
+
+
+docker cp apache-maven-3.6.1-bin.tar.gz jenkins:/    将宿主机文件拷到jenkins容器
+docker cp jenkins:/opt/apache-maven-3.6.1-bin.tar.gz /  将容器文件拷贝到宿主机
+docker exec -it -u root jenkins bash
+tar zxf apache-maven-3.6.1-bin.tar.gz -C /usr/local/
+cd /usr/local/ && mv apache-maven-3.6.1/ maven
+mv /etc/apt/sources.list sources.list.bak
+echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse">>/etc/apt/sources.list
+echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse">>/etc/apt/sources.list
+echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse">>/etc/apt/sources.list
+echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse">>/etc/apt/sources.list
+apt-get update
+apt-get install gnupg -y --allow-unauthenticated
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+apt-get update
+apt-get install vim lrzsz -y
+vim /etc/profile                        vim ~/.bashrc
+MAVEN_HOME=/usr/local/maven
+PATH=$PATH:$MAVEN_HOME/bin
+export PATH MAVEN_HOME
+source /etc/profile                        source ~/.bashrc
+
+全局配置jdk git maven 默认settings配置文件路径
+/usr/local/openjdk-8                            /usr/lib/jvm/java-8-openjdk-amd64
+/usr/bin/git
+/usr/local/maven
+/usr/local/maven/conf/settings.xml
+
+ssh-keygen -t rsa -C "15806204096@qq.com"
+docker exec -u root jenkins tail ~/.ssh/id_rsa.pub    获取公钥
+```
+
 
 详情见：
 https://github.com/OneJane/blog
