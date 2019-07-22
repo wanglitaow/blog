@@ -12,7 +12,8 @@
 # 多机集群
 ## 192.168.2.5
 vim /usr/local/docker/redis/docker-compose.yml
-```version: '3'
+```
+version: '3'
  
 services:
   redis1:
@@ -51,7 +52,8 @@ docker-compose up -d
 ## 192.168.2.7
 vim /usr/local/docker/redis/docker-compose.yml
 
-``` version: '3'
+``` 
+version: '3'
  
 services:
   redis1:
@@ -89,7 +91,8 @@ services:
 docker-compose up -d
 # 启动方式
 ## 直接启动
-``` docker run --rm -it inem0o/redis-trib create --replicas 1 192.168.2.5:8001 192.168.2.5:8002 192.168.2.5:8003 192.168.2.7:8004 192.168.2.7:8005 192.168.2.7:8006
+``` 
+docker run --rm -it inem0o/redis-trib create --replicas 1 192.168.2.5:8001 192.168.2.5:8002 192.168.2.5:8003 192.168.2.7:8004 192.168.2.7:8005 192.168.2.7:8006
 
 docker exec -it redis1 redis-cli -h 127.0.0.1 -p 8001 -c
 set a 100
@@ -99,7 +102,8 @@ cluster nodes
 > 自动指定master slave
 ## 指定master
 
-``` docker run --rm -it inem0o/redis-trib create  192.168.2.5:8001 192.168.2.5:8002 192.168.2.5:8003
+``` 
+docker run --rm -it inem0o/redis-trib create  192.168.2.5:8001 192.168.2.5:8002 192.168.2.5:8003
 
 docker run --rm -it inem0o/redis-trib add-node --slave --master-id 84c3b7ecbc4933e1368a6927f26c79ecc76810b3 192.168.2.7:8004 192.168.2.5:8001
 docker run --rm -it inem0o/redis-trib add-node --slave --master-id 716f11f2971e9494183937abd61f7a4baf0b3959 192.168.2.7:8005 192.168.2.5:8002 
@@ -111,7 +115,8 @@ docker run --rm -it inem0o/redis-trib help
 ```
 > 若同一台宿主机，不想使用host模式同一台，也可以把network_mode去掉，但就要加ports映射。redis-cluster的节点端口共分为2种，一种是节点提供服务的端口，如6379；一种是节点间通信的端口，固定格式为：10000+6379。
 
-``` docker-compose.yml
+``` 
+docker-compose.yml
 version: '3'
 
 
@@ -185,7 +190,8 @@ redis6:
 # 自定义Redis集群
 ## 制作redis镜像
 vim entrypoint.sh
-``` #!/bin/sh
+``` 
+#!/bin/sh
 #只作用于当前进程,不作用于其创建的子进程
 set -e
 #$0--Shell本身的文件名 $1--第一个参数 $@--所有参数列表
@@ -200,7 +206,8 @@ exec "$@"
 ```
 vim redis.conf
 
-``` #端口
+``` 
+#端口
 port REDIS_PORT
 #开启集群
 cluster-enabled yes
@@ -216,7 +223,8 @@ appendonly yes
 ```
 vi Dockerfile
 
-``` #基础镜像
+``` 
+#基础镜像
 FROM redis
 #修复时区
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -245,7 +253,8 @@ docker push 192.168.2.5:5000/codewj-redis-cluster
 
 ## 192.168.2.5
 
-``` version: '3'
+``` 
+version: '3'
 services:
   redis1:
     image: 192.168.2.5:5000/codewj-redis-cluster
@@ -285,7 +294,8 @@ services:
 ```
 ## 192.168.2.7
 
-``` version: '3'
+``` 
+version: '3'
 services:
   redis1:
     image: 192.168.2.5:5000/codewj-redis-cluster
