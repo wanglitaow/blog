@@ -183,7 +183,146 @@ redis6:
     - '18006:18006'
 ```
 # 自定义Redis集群
+## 制作redis镜像
+vim entrypoint.sh
+``` #!/bin/sh
+#只作用于当前进程,不作用于其创建的子进程
+set -e
+#$0--Shell本身的文件名 $1--第一个参数 $@--所有参数列表
+# allow the container to be started with `--user`
+if [ "$1" = 'redis-server' -a "$(id -u)" = '0' ]; then
+    sed -i 's/REDIS_PORT/'$REDIS_PORT'/g' /usr/local/etc/redis.conf
+    chown -R redis .  #改变当前文件所有者
+    exec gosu redis "$0" "$@"  #gosu是sudo轻量级”替代品”
+fi
 
+exec "$@"
+```
+vim redis.conf
+
+``` #端口
+port REDIS_PORT
+#开启集群
+cluster-enabled yes
+#配置文件
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+#更新操作后进行日志记录
+appendonly yes
+#设置主服务的连接密码
+# masterauth
+#设置从服务的连接密码
+# requirepass
+```
+vi Dockerfile
+
+``` #基础镜像
+FROM redis
+#修复时区
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo 'Asia/Shanghai' >/etc/timezone
+#环境变量
+ENV REDIS_PORT 8000
+#ENV REDIS_PORT_NODE 18000
+#暴露变量
+EXPOSE $REDIS_PORT
+#EXPOSE $REDIS_PORT_NODE
+#复制
+COPY entrypoint.sh /usr/local/bin/
+COPY redis.conf /usr/local/etc/
+#for config rewrite
+RUN chmod 777 /usr/local/etc/redis.conf
+RUN chmod +x /usr/local/bin/entrypoint.sh
+#入口
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+#命令
+CMD ["redis-server", "/usr/local/etc/redis.conf"]
+```
+> docker build -t codewj/redis-cluster:1.0 .  
+docker tag codewj/redis-cluster:1.0 192.168.2.5:5000/codewj-redis-cluster
+docker push 192.168.2.5:5000/codewj-redis-cluster
+
+
+## 192.168.2.5
+
+``` version: '3'
+services:
+  redis1:
+    image: 192.168.2.5:5000/codewj-redis-cluster
+    container_name: redis1
+    network_mode: host
+    restart: always
+    volumes:
+     - ./8001/data:/data
+    environment:
+     - REDIS_PORT=8001
+
+
+
+
+  redis2:
+    image: 192.168.2.5:5000/codewj-redis-cluster
+    container_name: redis2
+    network_mode: host
+    restart: always
+    volumes:
+     - ./8002/data:/data
+    environment:
+     - REDIS_PORT=8002
+
+
+
+
+  redis3:
+    image: 192.168.2.5:5000/codewj-redis-cluster
+    container_name: redis3
+    network_mode: host
+    restart: always
+    volumes:
+     - ./8003/data:/data
+    environment:
+     - REDIS_PORT=8003
+```
+## 192.168.2.7
+
+``` version: '3'
+services:
+  redis1:
+    image: 192.168.2.5:5000/codewj-redis-cluster
+    network_mode: host
+    container_name: redis4
+    restart: always
+    volumes:
+     - ./8004/data:/data
+    environment:
+     - REDIS_PORT=8004
+
+
+
+
+  redis2:
+    image: 192.168.2.5:5000/codewj-redis-cluster
+    network_mode: host
+    container_name: redis5
+    restart: always
+    volumes:
+     - ./8005/data:/data
+    environment:
+     - REDIS_PORT=8005
+
+
+
+
+  redis3:
+    image: 192.168.2.5:5000/codewj-redis-cluster
+    network_mode: host
+    container_name: redis6
+    restart: always
+    volumes:
+     - ./8006/data:/data
+    environment:
+     - REDIS_PORT=8006
+```
 
 详情见：
 https://github.com/OneJane/blog
