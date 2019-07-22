@@ -1,7 +1,8 @@
 @[TOC]
 
 # 环境搭建
-``` yum update -y nss curl libcurl
+``` 
+yum update -y nss curl libcurl
 curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 docker-compose --version
@@ -26,7 +27,8 @@ docker-compose -f example/cluster-hostname.yaml down
 http://192.168.2.5:8848/nacos  http://192.168.2.5:8849/nacos  http://192.168.2.5:8850/nacos           nacos/nacos
 # Nginx负载均衡
 
-``` mkdir /usr/local/docker/nginx/nacos -p
+``` 
+mkdir /usr/local/docker/nginx/nacos -p
 vim n1.conf
         upstream nacos { # 配置负载均衡
                 server 192.168.2.5:8848;
@@ -62,7 +64,8 @@ http://192.168.2.5:8841/nacos/#/login   http://192.168.2.5:8842/nacos/#/login  d
 
 # Keepalive双机热备
 
-``` docker exec -it nginx1 bash
+``` 
+docker exec -it nginx1 bash
 mv /etc/apt/sources.list sources.list.bak
 echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse">>/etc/apt/sources.list
 echo "deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse">>/etc/apt/sources.list
