@@ -1,4 +1,11 @@
 @[TOC](Linux常用软件安装)
+
+# 基本命令
+
+``` 
+du -h --max-depth=1  查看各文件夹大小
+```
+
 # jdk+maven
 
 ``` 
