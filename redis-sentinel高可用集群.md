@@ -24,15 +24,17 @@ docker run -it --name redis-master --network host -d redis --appendonly yes --po
 在192.168.2.7上运行
 
 ``` lsl
-docker run -it --name redis-slave1 --network host -d redis --appendonly yes --port 6301 --slaveof 192.168.2.56300
+docker run -it --name redis-slave1 --network host -d redis --appendonly yes --port 6301 --slaveof 192.168.2.5 6300
 
-docker run -it --name redis-slave2 --network host -d redis --appendonly yes --port 6302 --slaveof 192.168.2.56300
+docker run -it --name redis-slave2 --network host -d redis --appendonly yes --port 6302 --slaveof 192.168.2.5 6300
 ```
 # Sentinel部署
 
 ``` groovy
 wget http://download.redis.io/redis-stable/sentinel.conf
 ```
+mkdir /app/{sentine1,sentine2,sentine3}/{data,conf} -p
+
 并复制sentinel1.conf，sentinel2.conf，sentinel3.conf
 
 > sentinel1/data
