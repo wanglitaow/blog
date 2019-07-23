@@ -53,10 +53,11 @@ mkdir /app/{sentine1,sentine2,sentine3}/{data,conf} -p
 chmod a+w -R /app/
 ``` 
 port 26000
+pidfile /var/run/redis-sentinel.pid
+logfile ""
 daemonize yes
-dir "/tmp"
+dir /tmp
 sentinel monitor mymaster 192.168.2.5 6300 2
-
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
 sentinel failover-timeout mymaster 180000
@@ -66,7 +67,7 @@ sentinel failover-timeout mymaster 180000
 ``` stata
 docker run -d --network host --name sentine1 \
 -v /app/sentine1/data:/var/redis/data \
--v /app/sentine1/conf:/usr/local/etc/redis/sentinel.conf \
+-v /app/sentine1/conf/sentinel.conf:/usr/local/etc/redis/sentinel.conf \
 redis /usr/local/etc/redis/sentinel.conf --sentinel
 ```
 
@@ -76,9 +77,8 @@ sentinel2.conf
 ``` 
 port 26001
 daemonize yes
-dir "/tmp"
+dir /tmp
 sentinel monitor mymaster 192.168.2.5 6300 2
-
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
 sentinel failover-timeout mymaster 180000
@@ -88,9 +88,8 @@ sentinel failover-timeout mymaster 180000
 ``` stata
 docker run -d --network host --name sentine2 \
 -v /app/sentine2/data:/var/redis/data \
--v /app/sentine2/conf:/usr/local/etc/redis/sentinel.conf \
-redis \ 
-/usr/local/etc/redis/sentinel.conf --sentinel
+-v /app/sentine2/conf/sentinel.conf:/usr/local/etc/redis/sentinel.conf \
+redis /usr/local/etc/redis/sentinel.conf --sentinel
 ```
 ## 192.168.2.7 从节点
 
@@ -98,7 +97,7 @@ sentinel3.conf
 ``` 
 port 26002
 daemonize yes
-dir "/tmp"
+dir /tmp
 sentinel monitor mymaster 192.168.2.5 6300 2
 
 sentinel down-after-milliseconds mymaster 30000
@@ -109,9 +108,8 @@ sentinel failover-timeout mymaster 180000
 ``` stata
 docker run -d --network host --name sentine3 \
 -v /app/sentine3/data:/var/redis/data \
--v /app/sentine3/conf:/usr/local/etc/redis/sentinel.conf \
-redis \ 
-/usr/local/etc/redis/sentinel.conf --sentinel
+-v /app/sentine3/conf/sentinel.conf:/usr/local/etc/redis/sentinel.conf \
+redis /usr/local/etc/redis/sentinel.conf --sentinel
 ```
 # 测试
 
