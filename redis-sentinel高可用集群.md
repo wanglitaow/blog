@@ -37,16 +37,20 @@ mkdir /app/{sentine1,sentine2,sentine3}/{data,conf} -p
 
 并复制sentinel1.conf，sentinel2.conf，sentinel3.conf
 
-> sentinel1/data
-          /conf/sentinel1.conf
-sentinel2/data
-          /conf/sentinel2.conf
-sentinel3/data
-          /conf/sentinel3.conf
+> /app
+├── sentine1
+│   ├── conf
+│   └── data
+├── sentine2
+│   ├── conf
+│   └── data
+└── sentine3
+    ├── conf
+    └── data
 		  
 ## 192.168.2.5主节点
 
-sentinel1.conf 
+chmod a+w -R /app/
 ``` 
 port 26000
 daemonize yes
@@ -63,8 +67,7 @@ sentinel failover-timeout mymaster 180000
 docker run -d --network host --name sentine1 \
 -v /app/sentine1/data:/var/redis/data \
 -v /app/sentine1/conf:/usr/local/etc/redis/sentinel.conf \
-redis \ 
-/usr/local/etc/redis/sentinel.conf --sentinel
+redis /usr/local/etc/redis/sentinel.conf --sentinel
 ```
 
 ## 192.168.2.7 从节点
