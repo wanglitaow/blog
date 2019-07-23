@@ -10,6 +10,7 @@
 如果集群超过半数以上master挂掉，无论是否有slave集群进入fail状态.
 
 # 多机集群
+redis-cluster，也叫分布式redis集群，可以有多个master，数据分片分布在这些master上。
 ## 192.168.2.5
 vim /usr/local/docker/redis/docker-compose.yml
 ```
