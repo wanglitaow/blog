@@ -161,6 +161,7 @@ docker tag jdk1.8 192.168.2.5:5000/jdk1.8
 docker push 192.168.2.5:5000/jdk1.8        将镜像推到仓库
 docker save jdk1.8 > /home/java.tar.gz 导出镜像
 docker load < /home/java.tar.gz 导入镜像
+docker stop sentine1 | xargs docker rm
 ```
 # Redis镜像制作
 vim entrypoint.sh
