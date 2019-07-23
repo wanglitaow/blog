@@ -9,6 +9,12 @@
 如果集群任意master挂掉,且当前master没有slave.集群进入fail状态,也可以理解成集群的slot映射[0-16383]不完成时进入fail状态
 如果集群超过半数以上master挂掉，无论是否有slave集群进入fail状态.
 
+# Sentinel和Cluster区别
+> Redis-Sentinel(哨兵模式)是Redis官方推荐的高可用性(HA)解决方案，当用Redis做Master-slave的高可用方案时，假如master宕机了，Redis本身(包括它的很多客户端)都没有实现自动进行主备切换，而Redis-sentinel本身也是一个独立运行的进程，它能监控多个master-slave集群，发现master宕机后能进行自动切换。
+ 
+> Redis-Cluster当遇到单机内存、并发、流量等瓶颈时，可以采用Cluster架构达到负载均衡的目的。分布式集群首要解决把整个数据集按照分区规则映射到多个节点的问题，即把数据集划分到多个节点上，每个节点负责整个数据的一个子集。
+
+
 # 多机集群
 redis-cluster，也叫分布式redis集群，可以有多个master，数据分片分布在这些master上。
 ## 192.168.2.5
