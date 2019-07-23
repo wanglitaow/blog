@@ -55,7 +55,7 @@ chmod a+w -R /app/
 port 26000
 pidfile /var/run/redis-sentinel.pid
 logfile ""
-daemonize yes
+daemonize no
 dir /tmp
 sentinel monitor mymaster 192.168.2.5 6300 2
 sentinel down-after-milliseconds mymaster 30000
@@ -76,7 +76,7 @@ redis /usr/local/etc/redis/sentinel.conf --sentinel
 sentinel2.conf 
 ``` 
 port 26001
-daemonize yes
+daemonize no
 dir /tmp
 sentinel monitor mymaster 192.168.2.5 6300 2
 sentinel down-after-milliseconds mymaster 30000
@@ -96,7 +96,7 @@ redis /usr/local/etc/redis/sentinel.conf --sentinel
 sentinel3.conf 
 ``` 
 port 26002
-daemonize yes
+daemonize no
 dir /tmp
 sentinel monitor mymaster 192.168.2.5 6300 2
 
