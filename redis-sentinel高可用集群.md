@@ -61,6 +61,7 @@ sentinel monitor mymaster 192.168.2.5 6300 2
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
 sentinel failover-timeout mymaster 180000
+sentinel deny-scripts-reconfig yes
 ```
 创建主节点
 
@@ -82,6 +83,7 @@ sentinel monitor mymaster 192.168.2.5 6300 2
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
 sentinel failover-timeout mymaster 180000
+sentinel deny-scripts-reconfig yes
 ```
 
 创建从节点1
@@ -99,10 +101,10 @@ port 26002
 daemonize no
 dir /tmp
 sentinel monitor mymaster 192.168.2.5 6300 2
-
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
 sentinel failover-timeout mymaster 180000
+sentinel deny-scripts-reconfig yes
 ```
 创建从节点2
 ``` stata
