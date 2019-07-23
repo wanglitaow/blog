@@ -51,7 +51,7 @@ sentinel1.conf
 port 26000
 daemonize yes
 dir "/tmp"
-sentinel monitor mymaster 192.168.2.56300 2
+sentinel monitor mymaster 192.168.2.5 6300 2
 
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
@@ -74,7 +74,7 @@ sentinel2.conf
 port 26001
 daemonize yes
 dir "/tmp"
-sentinel monitor mymaster 192.168.2.56300 2
+sentinel monitor mymaster 192.168.2.5 6300 2
 
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
@@ -96,7 +96,7 @@ sentinel3.conf
 port 26002
 daemonize yes
 dir "/tmp"
-sentinel monitor mymaster 192.168.2.56300 2
+sentinel monitor mymaster 192.168.2.5 6300 2
 
 sentinel down-after-milliseconds mymaster 30000
 sentinel parallel-syncs mymaster 1
