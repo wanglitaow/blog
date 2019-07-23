@@ -4,7 +4,8 @@ redis-sentinel，只有一个master，各实例数据保持一致；
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563845335877.png)
 > 单个redis-sentinel进程来监控redis集群是不可靠的，由于redis-sentinel本身也有single-point-of-failure-problem(单点问题)，当出现问题时整个redis集群系统将无法按照预期的方式切换主从。官方推荐：一个健康的集群部署，至少需要3个Sentinel实例。另外，redis-sentinel只需要配置监控redis master，而集群之间可以通过master相互通信。
 
-
+> 首先Sentinel是集群部署的，Client可以链接任何一个Sentinel服务所获的结果都是一致的。其次，所有的Sentinel服务都会对Redis的主从服务进行监控，当监控到Master服务无响应的时候，Sentinel内部进行仲裁，从所有的 Slave选举出一个做为新的Master。并且把其他的slave作为新的Master的Slave。
+ 
 |  name   |   ip  |   port  |
 | --- | --- | --- |
 |  redis-master   |   192.168.2.5 |   6300  |
