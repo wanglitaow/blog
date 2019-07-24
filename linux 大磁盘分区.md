@@ -62,6 +62,7 @@ vi /etc/fstab
 /dev/mapper/centos_ht05-home3 /data3  ext4     defaults     0 0
 
 ```
+df -hl 			查看磁盘分区挂载情况
 
 详情见：
 https://github.com/OneJane/blog
