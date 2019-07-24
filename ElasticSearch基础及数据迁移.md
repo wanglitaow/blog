@@ -83,6 +83,7 @@ curl 192.168.2.7:1800/_cat/indices?v	查看所有索引信息
 ``` 
 ./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_record_analyze -y record_test --copy_settings --copy_mappings --shards=4 -w=5 -b=10 -c 10000;
 ```
+若数据结果不一致，可能是磁盘不足。
 ## 数据迁移完美方案
 通过两集群都建立同样索引，保证mappings和settings一致，再同步数据
 
