@@ -3,7 +3,7 @@
 # 已挂载磁盘分区
 分区需先把磁盘unmount /dev/mapper/centos_ht05-home 
 Q1:Error: /dev/dm-2: unrecognised disk label
-mklabel gpt  
+mklabel gpt  	转成gpt格式再分区
 
 # 开始分区
 
@@ -51,6 +51,16 @@ fdisk -l 查看/dev/mapper/centos_ht05-home3 /dev/mapper/centos_ht05-home2 /dev/
 mount /dev/mapper/centos_ht05-home1 /data1
 mount /dev/mapper/centos_ht05-home2 /data2
 mount /dev/mapper/centos_ht05-home3 /data3
+```
+
+# 开机自动挂载
+vi /etc/fstab
+
+``` 
+/dev/mapper/centos_ht05-home1 /data1  ext4     defaults     0 0
+/dev/mapper/centos_ht05-home2 /data2  ext4     defaults     0 0
+/dev/mapper/centos_ht05-home3 /data3  ext4     defaults     0 0
+
 ```
 
 详情见：
