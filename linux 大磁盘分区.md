@@ -6,7 +6,7 @@ Q1:Error: /dev/dm-2: unrecognised disk label
 mklabel gpt  	转成gpt格式再分区
 
 # 开始分区
-
+du -h --max-depth=1  查看各文件夹大小 
 ``` linux
 parted /dev/dm-2    查看/dev/mapper/centos_ht05-home是l文件属性，链接到dm-2,分区dm-2磁盘
 (parted) mkpart                                                           
