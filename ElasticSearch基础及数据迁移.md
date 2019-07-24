@@ -91,7 +91,7 @@ curl 192.168.2.7:1800/_cat/indices?v	查看所有索引信息
 curl -XGET 192.168.2.7:1800/p_answer_handle_alarm    查看索引信息
 curl -XGET 192.168.2.7:1800/p_answer_handle_alarm/_search; 
 curl -XGET http://192.168.2.5:1800/record_test/_settings?pretty    查看settings信息
-PUT http://192.168.2.5:1800/record_set/_settings            修改副本数，同curl -XPUT '192.168.2.7:1800/record_set/_settings' -d'{"index":{"number_of_replicas":1}}'
+PUT http://192.168.2.5:1800/record_set/_settings            修改副本数，片的信息分又重新做了调整，同curl -XPUT '192.168.2.7:1800/record_set/_settings' -d'{"index":{"number_of_replicas":1}}'
 {
   "index":{
      "number_of_replicas":1
