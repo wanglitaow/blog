@@ -41,7 +41,7 @@ discovery.zen.minimum_master_nodes: 1
 
 
 
-docker run  -d  -v /usr/local/docker/ElasticSearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /usr/local/docker/ElasticSearch/data:/usr/share/elasticsearch/data --name es-node1 --net host --privileged elasticsearch:6.6.0
+docker run  -d  -v /usr/local/docker/ElasticSearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /usr/local/docker/ElasticSearch/data:/usr/share/elasticsearch/data -e ES_MIN_MEM=10g -e ES_MAX_MEM=10g --name es-node1 --net host --privileged elasticsearch:6.6.0
 docker exec -it es-node1 bash
 elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.6.0/elasticsearch-analysis-ik-6.6.0.zip
 docker restart es-node1
@@ -65,7 +65,7 @@ node.data: true
 discovery.zen.ping.unicast.hosts: ["192.168.2.5:1801","192.168.2.6:1801"]  # 可配置多个
 discovery.zen.minimum_master_nodes: 1
 
-docker run  -d  -v /usr/local/docker/ElasticSearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /usr/local/docker/ElasticSearch/data:/usr/share/elasticsearch/data --name es-node2 --net host --privileged elasticsearch:6.6.0
+docker run  -d  -v /usr/local/docker/ElasticSearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /usr/local/docker/ElasticSearch/data:/usr/share/elasticsearch/data --name es-node2 -e ES_MIN_MEM=10g -e ES_MAX_MEM=10g --net host --privileged elasticsearch:6.6.0
 docker exec -it es-node2 bash
 elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.6.0/elasticsearch-analysis-ik-6.6.0.zip
 docker restart es-node2
