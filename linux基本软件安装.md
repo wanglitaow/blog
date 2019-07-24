@@ -4,7 +4,18 @@
 
 ``` 
 du -h --max-depth=1  查看各文件夹大小
+nohup sh inotify3.sh >>333.out & 后台执行脚本并把输出都指定文件 
+jobs -l 查看运行的后台进程
+fg 1 通过jobid将后台进程提取到前台运行
+ctrl + z 将暂停当前正在运行到进程，fg放入后台运行
 ```
+## ekill
+
+``` 
+vim /usr/local/bin/ekill
+ps aux | grep -e $* | grep -v grep | awk '{print $2}' | xargs -i kill {}
+```
+chmod a+x /usr/local/bin/ekill 通过ekill删除进程
 
 # jdk+maven
 
