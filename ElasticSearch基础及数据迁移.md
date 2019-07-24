@@ -19,6 +19,7 @@ sysctl -p
 ```
 ## Node1 192.168.2.5
 
+最好挂载到大磁盘上
 ``` 
 mkdir /usr/local/docker/ElasticSearch/data -p && chmod 777 /usr/local/docker/ElasticSearch/data
 mkdir /usr/local/docker/ElasticSearch/config/ -p && cd /usr/local/docker/ElasticSearch/config/
