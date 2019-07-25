@@ -83,7 +83,8 @@ curl 192.168.2.7:1800/_cat/indices?v	查看所有索引信息
 ``` 
 ./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_record_analyze -y record_test --copy_settings --copy_mappings --shards=4 -w=5 -b=10 -c 10000;
 ```
-若数据结果不一致，可能是磁盘不足。
+
+
 ## 数据迁移完美方案
 通过两集群都建立同样索引，保证mappings和settings一致，再同步数据
 
@@ -208,6 +209,13 @@ POST 192.168.2.5:1800/test/doc/_delete_by_query 删除
     }
 }
 ```
+Q1:若数据结果不一致，可能是磁盘不足。
+Q2:"caused_by":{"type":"search_context_missing_exception","reason":"No search context found for id [69218326]"}}
+``` 
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x city_answer_handle_alarm -y city_answer_handle_alarm  -t=10m -w=6 -b=10 -c 5000;
+```
+scroll time 超时，设置-t参数，默认是1m
+
 同步后的数据结构
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563358966961.png)
 
