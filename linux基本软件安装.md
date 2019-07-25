@@ -8,6 +8,7 @@ nohup sh inotify3.sh >>333.out & 后台执行脚本并把输出都指定文件
 jobs -l 查看运行的后台进程
 fg 1 通过jobid将后台进程提取到前台运行
 ctrl + z 将暂停当前正在运行到进程，fg放入后台运行
+yum -c /etc/yum.conf --installroot=/usr/local --releasever=/  install lszrz  	安装文件到其他目录
 ```
 ## ekill
 
