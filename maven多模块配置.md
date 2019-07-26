@@ -116,6 +116,24 @@ mvn install:install-file -DgroupId=org.csource.fastdfs -DartifactId=fastdfs -Dve
 - compile（默认）被依赖项目需要参与到当前项目的编译，测试，打包，运行等阶段。打包的时候通常会包含被依赖项目。
 - test 被依赖项目仅仅参与测试相关的工作，包括测试代码的编译，执行,Junit 测试。
 - system 被依赖项不会从 maven 仓库中查找，而是从本地系统中获取，systemPath 元素用于制定本地系统中 jar 文件的路径
+# 发布
+
+``` 
+<version>1.0.0-SNAPSHOT</version>
+<distributionManagement>
+   <repository>
+      <id>nexus-releases</id>        <!-- ID 名称必须要与 settings.xml 中 Servers 配置的 ID 名称保持一致。-->
+      <name>Nexus Release Repository</name>
+      <url>http://192.168.2.5:182/repository/maven-releases/</url>
+   </repository>
+   <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <name>Nexus Snapshot Repository</name>
+      <url>http://192.168.2.5:182/repository/maven-snapshots/</url>
+   </snapshotRepository>
+</distributionManagement>
+mvn deploy发布到私服,在项目 pom.xml 中设置的版本号添加 SNAPSHOT 标识的都会发布为 SNAPSHOT 版本，没有 SNAPSHOT 标识的都会发布为 RELEASE 版本
+```
 
 详情见：
 https://github.com/OneJane/blog
