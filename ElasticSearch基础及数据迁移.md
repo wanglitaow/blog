@@ -212,13 +212,13 @@ POST 192.168.2.5:1800/test/doc/_delete_by_query 删除
 Q1:若数据结果不一致，可能是磁盘不足。
 Q2:"caused_by":{"type":"search_context_missing_exception","reason":"No search context found for id [69218326]"}}
 ``` 
-esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_record_analyze -y t_record_analyze   -w=5 -b=10 -c 10000;
-esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_neo4j_data -y t_neo4j_data   -w=5 -b=10 -c 10000;
-esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_data_analysis -y t_data_analysis   -w=5 -b=10 -c 10000;
-esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_cjjxq -y t_cjjxq   -w=5 -b=10 -c 10000;
-esm -s http://192.168.1.225:9200 -d http://192.168.2.7:1800 -x t_alarm_analysis_result -y t_alarm_analysis_result   -w=5 -b=10 -c 10000;
-esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x p_answer_handle_alarm -y p_answer_handle_alarm  -t=10m  -w=5 -b=10 -c 5000;
-esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x city_answer_handle_alarm -y city_answer_handle_alarm  -t=10m  -w=5 -b=10 -c 5000;
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_record_analyze -y t_record_analyze   -w=5 -b=10 -c 10000;
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_neo4j_data -y t_neo4j_data   -w=5 -b=10 -c 10000;
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_data_analysis -y t_data_analysis   -w=5 -b=10 -c 10000;
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x t_cjjxq -y t_cjjxq   -w=5 -b=10 -c 10000;
+./esm -s http://192.168.1.225:9200 -d http://192.168.2.7:1800 -x t_alarm_analysis_result -y t_alarm_analysis_result   -w=5 -b=10 -c 10000;
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x p_answer_handle_alarm -y p_answer_handle_alarm  -t=10m  -w=5 -b=10 -c 5000;
+./esm -s http://192.168.2.6:9200 -d http://192.168.2.7:1800 -x city_answer_handle_alarm -y city_answer_handle_alarm  -t=10m  -w=5 -b=10 -c 5000;
 ```
 scroll time 超时，设置-t参数，默认是1m
 
