@@ -4,6 +4,8 @@
 application.yml
 
 ``` 
+server:
+  port: 10205
 spring:
   datasource:
       base:
