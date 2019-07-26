@@ -135,6 +135,8 @@ mvn install:install-file -DgroupId=org.csource.fastdfs -DartifactId=fastdfs -Dve
 mvn deploy发布到私服,在项目 pom.xml 中设置的版本号添加 SNAPSHOT 标识的都会发布为 SNAPSHOT 版本，没有 SNAPSHOT 标识的都会发布为 RELEASE 版本
 ```
 Nexus 3.0 不支持页面上传，可使用 maven 命令：
+
+``` haml
 mvn deploy:deploy-file
   -DgroupId=com.github.axet
   -DartifactId=kaptcha
@@ -143,6 +145,8 @@ mvn deploy:deploy-file
   -Dfile=E:\kaptcha-0.0.9.jar
   -Durl=http://192.168.2.5:182/repository/maven-releases/
   -DrepositoryId=nexus-releases
+```
+
 要求jar的pom中的repository.id和settings.xml中一致
 
 详情见：
