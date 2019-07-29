@@ -229,7 +229,7 @@ scroll time 超时，设置-t参数，默认是1m
 ## ES单节点安装
 
 ``` groovy
-docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 docker.io/elasticsearch:6.6.0 
+docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 --privileged docker.io/elasticsearch:6.6.0 
 docker cp tensquare_es:/usr/share/elasticsearch/config/elasticsearch.yml /usr/share/elasticsearch.yml 
 docker stop tensquare_es 
 docker rm tensquare_es 
@@ -246,7 +246,7 @@ vim /etc/sysctl.conf
 vm.max_map_count=655360 
 sysctl -p 
 修改内核参数立马生效 我们需要以文件挂载的 方式创建容器才行，这样我们就可以通过修改宿主机中的某个文件来实现对容器内配置 文件的修改 
-docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 -v /usr/share/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml docker.io/elasticsearch:6.6.0
+docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 --privileged -v /usr/share/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml docker.io/elasticsearch:6.6.0
 docker restart tensquare_es 才可以远程连接使用
 ```
 
