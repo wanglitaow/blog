@@ -225,5 +225,108 @@ scroll time 超时，设置-t参数，默认是1m
 同步后的数据结构
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563358966961.png)
 
+# logstash
+## ES单节点安装
+
+``` groovy
+docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 docker.io/elasticsearch:6.6.0 
+docker cp tensquare_es:/usr/share/elasticsearch/config/elasticsearch.yml /usr/share/elasticsearch.yml 
+docker stop tensquare_es 
+docker rm tensquare_es 
+vim /usr/share/elasticsearch.yml 
+transport.host: 0.0.0.0 
+docker restart tensquare_es 
+vim /etc/security/limits.conf 
+* soft nofile 65536 
+* hard nofile 65536 
+nofile是单个进程允许打开的最大文件个数 
+soft nofile 是软限制 
+hard nofile是硬限制 
+vim /etc/sysctl.conf 
+vm.max_map_count=655360 
+sysctl -p 
+修改内核参数立马生效 我们需要以文件挂载的 方式创建容器才行，这样我们就可以通过修改宿主机中的某个文件来实现对容器内配置 文件的修改 
+docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 -v /usr/share/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml docker.io/elasticsearch:6.6.0
+docker restart tensquare_es 才可以远程连接使用
+```
+
+## 同步mysql
+
+https://www.elastic.co/cn/downloads/past-releases/logstash-6-6-0
+tar zxf logstash-6.6.0.tar.gz && cd /root/logstash-6.6.0/bin
+mkdir mysql && cd mysql && vim mysql.conf
+
+``` input {
+  jdbc {
+      # mysql jdbc connection string to our backup databse
+      jdbc_connection_string => "jdbc:mysql://192.168.2.5:185/ht_micro_record?characterEncoding=UTF8"
+      # the user we wish to excute our statement as
+      jdbc_user => "root"
+      jdbc_password => "123456"
+      # the path to our downloaded jdbc driver
+      jdbc_driver_library => "/root/logstash-6.6.0/bin/mysql/mysql-connector-java-5.1.47.jar"
+      # the name of the driver class for mysql
+      jdbc_driver_class => "com.mysql.jdbc.Driver"
+      jdbc_paging_enabled => "true"
+      jdbc_page_size => "500000"
+      #以下对应着要执行的sql的绝对路径。
+      #statement_filepath => "select id,title,content from tb_article"
+      statement => "SELECT id,applyer_police_num,applyer_name FROM t_apply"
+      #定时字段 各字段含义（由左至右）分、时、天、月、年，全部为*默认含义为每分钟都更新（测试结果，不同的话请留言指出）
+      schedule => "* * * * *"
+  }
+}
+output {
+  elasticsearch {
+      #ESIP地址与端口
+      hosts => "192.168.3.224:9200"
+      #ES索引名称（自己定义的）
+      index => "t_apply"
+      #自增ID编号
+      document_id => "%{id}"
+      document_type => "article"
+  }
+  stdout {
+      #以JSON格式输出
+      codec => json_lines
+  }
+}
+```
+nohup ./logstash -f mysql/mysql.conf &
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564364466864.png)
+
+## 同步es
+/root/logstash-6.6.0/bin/es/es.conf
+``` 
+input {
+    elasticsearch {
+        hosts => ["192.168.2.5:1800","192.168.2.7:1800"]
+        index => "t_neo4j_data"
+        size => 1000
+        scroll => "1m"
+        codec => "json"
+        docinfo => true
+    }
+}
+
+filter {
+        mutate {
+                remove_field => ["@timestamp", "@version"]
+        }
+
+}
+
+output {
+    elasticsearch {
+        hosts => ["192.168.3.224:9200"]
+        index => "%{[@metadata][_index]}"
+    }
+    stdout { codec => rubydebug { metadata => true } }
+
+}
+
+```
+./logstash -f es/es.conf --path.data ../logs/
+
 详情见：
 https://github.com/OneJane/blog
