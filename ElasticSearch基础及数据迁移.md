@@ -328,5 +328,42 @@ output {
 ```
 ./logstash -f es/es.conf --path.data ../logs/
 
+# elasticdump
+
+``` 
+wget https://nodejs.org/dist/v8.11.2/node-v8.11.2-linux-x64.tar.xz
+tar xf node-v8.11.2-linux-x64.tar.xz -C /usr/local/
+ln -s /usr/local/node-v8.11.2-linux-x64/bin/npm /usr/local/bin/npm
+ln -s /usr/local/node-v8.11.2-linux-x64/bin/node /usr/local/bin/node
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+ln -s /usr/local/node-v8.11.2-linux-x64/bin/cnpm /usr/local/bin/cnpm
+cnpm init -f
+cnpm install elasticdump
+cd node_modules/elasticdump/bin
+./elasticdump \
+  --input=http://192.168.2.6:9200/t_record_analyze \
+  --output=http://192.168.3.224:9200/t_record_analyze \
+  --type=analyzer
+
+./elasticdump \
+  --input=http://192.168.2.6:9200/t_record_analyze \
+  --output=http://192.168.3.224:9200/t_record_analyze \
+  --type=mapping
+  
+./elasticdump \
+  --input=http://192.168.2.6:9200/t_record_analyze \
+  --output=http://192.168.3.224:9200/t_record_analyze \
+  --type=data
+
+./elasticdump \
+  --input=http://192.168.2.6:9200:9200/t_record_analyze \
+  --output=data.json \
+  --searchBody '{"query":{"term":{"username": "admin"}}}
+
+./elasticdump \
+  --input=./data.json \
+  --output=http://192.168.2.7:1800
+```
+
 详情见：
 https://github.com/OneJane/blog
