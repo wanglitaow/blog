@@ -89,7 +89,7 @@ docker images | grep -e $*|awk '{print $3}'|sed '2p'|xargs docker rmi
 chmod a+x /usr/local/bin/dokill
 dokill tensquare_recruit
 ```
-
+Build时必须clean
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563789548337.png)
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564397581018.png)
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1563789561923.png)
