@@ -8,8 +8,14 @@ https://github.com/medcl/esm-abandoned/releases/download/v0.4.1/linux64-esm--201
 一个索引拆分为多个shard存储部分数据，每个shard由primary shard和replica shard组成，primary写入将同步到replica，类似kafka的partition副本。保证高可用。
 Es多个节点选举一个为master，管理和切换主副shard，若宕机则重新选举，并将宕机节点primary shard身份转移到其他机器的replica shard。重启将修改原primary为replica同步数据。
 
+每个在文档上执行的写操作，包括删除，都会使其版本增加。
 
+真正的删除时机：
 
+> deleting a document doesn’t immediately remove the document from disk; it just marks it as deleted. Elasticsearch will clean up deleted documents in the background as you continue to index more data.
+
+1. 删除索引是会立即释放空间的，不存在所谓的“标记”逻辑。
+2. 删除文档的时候，是将新文档写入，同时将旧文档标记为已删除。 磁盘空间是否释放取决于新旧文档是否在同一个segment file里面，因此ES后台的segment merge在合并segment file的过程中有可能触发旧文档的物理删除。但因为一个shard可能会有上百个segment file，还是有很大几率新旧文档存在于不同的segment里而无法物理删除。想要手动释放空间，只能是定期做一下force merge，并且将max_num_segments设置为1。
 # 多机器集群搭建
 
 ``` 
