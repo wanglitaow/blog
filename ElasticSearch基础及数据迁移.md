@@ -246,7 +246,7 @@ vim /etc/sysctl.conf
 vm.max_map_count=655360 
 sysctl -p 
 修改内核参数立马生效 我们需要以文件挂载的 方式创建容器才行，这样我们就可以通过修改宿主机中的某个文件来实现对容器内配置 文件的修改 
-docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 --privileged -v /usr/share/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml docker.io/elasticsearch:6.6.0
+docker run -di --name=tensquare_es -p 9200:9200 -p 9300:9300 --privileged 	-v /usr/share/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml docker.io/elasticsearch:6.6.0
 docker restart tensquare_es 才可以远程连接使用
 ```
 
@@ -364,6 +364,7 @@ cd node_modules/elasticdump/bin
   --input=./data.json \
   --output=http://192.168.2.7:1800
 ```
+# 整合springboot
 
 详情见：
 https://github.com/OneJane/blog
