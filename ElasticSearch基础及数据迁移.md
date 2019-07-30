@@ -365,6 +365,287 @@ cd node_modules/elasticdump/bin
   --output=http://192.168.2.7:1800
 ```
 # 整合springboot
+父pom
+```
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.2.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+```
+子pom
+
+``` 
+<!--elasticsearch-->
+<dependency>
+    <groupId>org.elasticsearch</groupId>
+    <artifactId>elasticsearch</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-elasticsearch</artifactId>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+</dependency>
+<dependency>
+    <groupId>net.java.dev.jna</groupId>
+    <artifactId>jna</artifactId>
+    <!-- <version>3.0.9</version> -->
+</dependency>
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.2</version>
+</dependency>
+```
+配置文件bootstrap.yml
+
+``` 
+es:
+  nodes: 192.168.2.5:1800,192.168.2.7:1800
+  host: 192.168.2.6,192.168.2.7
+  port: 1801,1801
+  types: doc
+  clusterName: elasticsearch-cluster
+  #笔录分析库
+  blDbName: t_record_analyze
+  #接警信息库
+  jjDbName: p_answer_alarm
+  #处警信息库
+  cjDbName: p_handle_alarm
+  #警情分析结果信息库
+  jqfxDbName: t_alarm_analysis_result
+  #标准化分析
+  cjjxqDbName: t_cjjxq
+  #接处警整合库
+  jcjDbName: p_answer_handle_alarm
+  #警情分析
+  daDbName: t_data_analysis
+  #警情结果表(neo4j使用)
+  neo4jData: t_neo4j_data
+  #市局接处警表
+  cityDbName: city_answer_handle_alarm
+```
+配置类com/ht/micro/record/service/dubbo/provider/utils/EsConfig.java
+
+``` 
+@Service
+public class EsConfig {
+
+    @Value("${es.nodes}")
+    private String nodes;
+
+    @Value("${es.host}")
+    private String host;
+
+    @Value("${es.port}")
+    private String port;
+
+    @Value("${es.blDbName}")
+    private String blDbName;
+
+    @Value("${es.jjDbName}")
+    private String jjDbName;
+
+    @Value("${es.cjDbName}")
+    private String cjDbName;
+
+    @Value("${es.jqfxDbName}")
+    private String jqfxDbName;
+
+    @Value("${es.clusterName}")
+    private String clusterName;
+
+    @Value("${es.jjDbName}")
+    private String answerDbName;
+
+    @Value("${es.cjDbName}")
+    private String handleDbName;
+
+    @Value("${es.cjjxqDbName}")
+    private String cjjxqDbName;
+
+    @Value("${es.jcjDbName}")
+    private String jcjDbName;
+
+    @Value("${es.daDbName}")
+    private String daDbName;
+
+    @Value("${es.daDbName}")
+    private String fxDbName;
+
+    @Value("${es.types}")
+    private String types;
+
+    @Value("${es.neo4jData}")
+    private String neo4jData;
+
+    @Value("${es.cityDbName}")
+    private String cityDbName;
+}	
+```
+配置类 com/ht/micro/record/service/dubbo/provider/utils/ElasticClientSingleton.java
+``` 
+@Service
+public class ElasticClientSingleton {
+    protected final Logger logger = LoggerFactory.getLogger(ElasticClientSingleton.class);
+
+    private AtomicInteger atomicPass = new AtomicInteger();    // 0 未初始化, 1 已初始化
+
+    private TransportClient transportClient;
+    private BulkRequestBuilder bulkRequest;
+
+
+    public synchronized void init(EsConfig esConfig) {
+        try {
+            String ipArray = esConfig.getHost();
+            String portArray = esConfig.getPort();
+            String cluster = esConfig.getClusterName();
+
+            Settings settings = Settings.builder()
+                    .put("cluster.name", cluster)  //连接的集群名
+                    .put("client.transport.ignore_cluster_name", true)
+                    .put("client.transport.sniff", false)//如果集群名不对，也能连接
+                    .build();
+            transportClient = new PreBuiltTransportClient(settings);
+
+            String[] ips = ipArray.split(",");
+            String[] ports = portArray.split(",");
+            for (int i = 0; i < ips.length; i++) {
+                transportClient.addTransportAddress(new TransportAddress(InetAddress.getByName(ips[i]), Integer
+                        .parseInt(ports[i])));
+            }
+
+            atomicPass.set(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+
+            atomicPass.set(0);
+            destroy();
+        }
+    }
+
+    public void destroy() {
+        if (transportClient != null) {
+            transportClient.close();
+            transportClient = null;
+        }
+    }
+
+    public BulkRequestBuilder getBulkRequest(EsConfig esConfig) {
+        if (atomicPass.get() == 0) {    // 初始化
+            init(esConfig);
+        }
+
+        bulkRequest = transportClient.prepareBulk();
+
+        return bulkRequest;
+    }
+
+    public TransportClient getTransportClient(EsConfig esConfig) {
+        if (atomicPass.get() == 0) {    // 初始化
+            init(esConfig);
+        }
+
+        return transportClient;
+    }
+}
+```
+配置类 com/ht/micro/record/service/dubbo/provider/utils/ElasticClient.java
+
+``` 
+@Service
+public class ElasticClient {
+    @Autowired
+    private EsConfig esConfig;
+
+    private static final Logger logger = LoggerFactory.getLogger(ElasticClient.class);
+    
+    private static BulkRequestBuilder bulkRequest;
+
+    @Autowired
+    private  ElasticClientSingleton elasticClientSingleton;
+    @PostConstruct
+    public void init() {
+
+    	bulkRequest = elasticClientSingleton.getBulkRequest(esConfig);
+    }
+
+
+
+    
+
+    /**
+     * @param url
+     * @param query
+     * @return
+     * @Description 发送请求
+     * @Author 裴健(peij@htdatacloud.com)
+     * @Date 2016年6月13日
+     * @History
+     * @his1
+     */
+    public static String postRequest(String url, String query) {
+        RestTemplate restTemplate = new RestTemplate();
+        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(type);
+        headers.add("Accept", MediaType.APPLICATION_JSON.toString());
+        HttpEntity<String> formEntity = new HttpEntity<String>(query, headers);
+        String result = restTemplate.postForObject(url, formEntity, String.class);
+
+        return result;
+    }
+
+
+
+    /**
+     * action 提交操作
+     */
+//    public void action() {
+//        int reqSize = bulkRequest.numberOfActions();
+//        //读不到数据了，默认已经全部读取
+//        if (reqSize == 0) {
+//            bulkRequest.request().requests().clear();
+//        }
+//        bulkRequest.setTimeout(new TimeValue(1000 * 60 * 5)); //超时30秒
+//        BulkResponse bulkResponse = bulkRequest.execute().actionGet();
+//        //持久化异常
+//        if (bulkResponse.hasFailures()) {
+//            logger.error(bulkResponse.buildFailureMessage());
+//            bulkRequest.request().requests().clear();
+//        }
+//        logger.info("import over...." + bulkResponse.getItems().length);
+//    }
+
+
+}
+```
+测试com/ht/micro/record/service/dubbo/provider/controller/ProviderController.java
+
+``` 
+    @Autowired
+    ElasticClientSingleton elasticClientSingleton;
+    @Autowired
+    EsConfig esConfig;
+    @GetMapping("/test")
+    public void test(){
+        SearchRequestBuilder srb = elasticClientSingleton.getTransportClient(esConfig).prepareSearch(esConfig.getCityDbName()).setTypes(esConfig.getTypes());
+        TermsQueryBuilder cjbsBuilder = QueryBuilders.termsQuery("cjbs", "4");
+        SearchResponse weekSearchResponse = srb.setQuery(cjbsBuilder).execute().actionGet();
+        System.out.println(weekSearchResponse.getHits().getTotalHits());
+    }	
+```
 
 详情见：
 https://github.com/OneJane/blog
