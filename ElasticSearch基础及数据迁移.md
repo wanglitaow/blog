@@ -45,9 +45,9 @@ node.data: true
 discovery.zen.ping.unicast.hosts: ["192.168.2.5:1801","192.168.2.6:1801"]  # 可配置多个
 discovery.zen.minimum_master_nodes: 1
 
+修改/usr/share/elasticsearch/config/jvm.options中-Xms10g	-Xmx10g
 
-
-docker run  -d  -v /usr/local/docker/ElasticSearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /usr/local/docker/ElasticSearch/data:/usr/share/elasticsearch/data  --name es-node1 --net host --privileged elasticsearch:6.6.0
+docker run  -d  -v /data3/elasticsearch/config/jvm.options:/usr/share/elasticsearch/config/jvm.options -v /data3/elasticsearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /data3/elasticsearch/data:/usr/share/elasticsearch/data --name es-node1 --net host --privileged elasticsearch:6.6.0
 docker exec -it es-node1 bash
 elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.6.0/elasticsearch-analysis-ik-6.6.0.zip
 docker restart es-node1
@@ -71,7 +71,9 @@ node.data: true
 discovery.zen.ping.unicast.hosts: ["192.168.2.5:1801","192.168.2.6:1801"]  # 可配置多个
 discovery.zen.minimum_master_nodes: 1
 
-docker run  -d  -v /usr/local/docker/ElasticSearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /usr/local/docker/ElasticSearch/data:/usr/share/elasticsearch/data --name es-node2  --net host --privileged elasticsearch:6.6.0
+修改/usr/share/elasticsearch/config/jvm.options中-Xms10g	-Xmx10g
+
+docker run  -d  -v /data2/elasticsearch/config/jvm.options:/usr/share/elasticsearch/config/jvm.options -v /data2/elasticsearch/config/es.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /data3/elasticsearch/data:/usr/share/elasticsearch/data  --name es-node2 --net host --privileged elasticsearch:6.6.0
 docker exec -it es-node2 bash
 elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.6.0/elasticsearch-analysis-ik-6.6.0.zip
 docker restart es-node2
