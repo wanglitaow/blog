@@ -34,6 +34,8 @@ parent.relativePath修改为<relativePath />，发布单个服务时设定一个
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <configuration>
+			    <!--被其他服务引用必须增加该配置-->
+			    <classifier>exec</classifier>
                 <mainClass>com.ht.micro.record.service.consumer.NoteConsumerServiceApplication</mainClass>
             </configuration>
         </plugin>
