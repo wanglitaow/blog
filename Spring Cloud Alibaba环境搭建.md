@@ -607,6 +607,148 @@ ht-micro-record-database
         </plugins>
     </build>
 ```
+tk.mybatis.mapper.MyMapper
+
+``` 
+public interface MyMapper<T> extends Mapper<T>, MySqlMapper<T> {
+}
+```
+generator/generatorConfig.xml
+
+``` 
+<generatorConfiguration>
+    <!-- 引入数据库连接配置 -->
+    <properties resource="jdbc.properties"/>
+
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <!-- 配置 tk.mybatis 插件 -->
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.MyMapper"/>
+        </plugin>
+
+        <!-- 配置数据库连接 -->
+        <jdbcConnection
+                driverClass="${jdbc.driverClass}"
+                connectionURL="${jdbc.connectionURL}"
+                userId="${jdbc.username}"
+                password="${jdbc.password}">
+        </jdbcConnection>
+
+        <!-- 配置实体类存放路径 -->
+        <javaModelGenerator targetPackage="com.ht.micro.record.commons.domain" targetProject="src/main/java"/>
+
+        <!-- 配置 XML 存放路径 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources/baseMapper"/>
+
+        <!-- 配置 DAO 存放路径 -->
+        <javaClientGenerator
+                targetPackage="com.ht.micro.record.commons.mapper.baseMapper"
+                targetProject="src/main/java"
+                type="XMLMAPPER"/>
+
+        <!--
+            配置需要指定生成的数据库和表，% 代表所有表
+            生成@Table中删除ht-micro-record..
+        -->
+        <table catalog="ht_micro_record" tableName="%">
+            <!-- mysql 配置 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
+    </context>
+</generatorConfiguration>
+```
+jdbc.properties
+
+``` 
+jdbc.driverClass=com.mysql.jdbc.Driver
+jdbc.connectionURL=jdbc:mysql://192.168.2.5:185/ht_micro_record?useUnicode=true&characterEncoding=utf-8&useSSL=false
+jdbc.username=root
+jdbc.password=123456
+```
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564815381505.png)
+mvn mybatis-generator:generate 自动生成表实体和mapper接口
+# 创建外部链路追踪 
+ht-micro-record-external-skywalking
+
+``` 
+<parent>
+        <groupId>com.htdc</groupId>
+        <artifactId>ht-micro-record-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../ht-micro-record-dependencies/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ht-micro-record-external-skywalking</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0.0</version>
+
+    <name>ht-micro-record-external-skywalking</name>
+    <url>http://www.htdatacloud.com/</url>
+    <inceptionYear>2019-Now</inceptionYear>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <!-- 配置执行器 -->
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- 绑定到 package 生命周期阶段上 -->
+                        <phase>package</phase>
+                        <goals>
+                            <!-- 只运行一次 -->
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>skywalking</finalName>
+                            <descriptors>
+                                <!-- 配置描述文件路径 -->
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+```
+ht-micro-record-external-skywalking/src/main/assembly/assembly.xml
+
+``` 
+<assembly>
+    <id>6.0.0-Beta</id>
+    <formats>
+        <!-- 打包的文件格式，支持 zip、tar.gz、tar.bz2、jar、dir、war -->
+        <format>tar.gz</format>
+    </formats>
+    <!-- tar.gz 压缩包下是否生成和项目名相同的根目录，有需要请设置成 true -->
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <!-- 是否把本项目添加到依赖文件夹下，有需要请设置成 true -->
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <!-- 将 scope 为 runtime 的依赖包打包 -->
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <!-- 设置需要打包的文件路径 -->
+            <directory>agent</directory>
+            <!-- 打包后的输出路径 -->
+            <outputDirectory></outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
+```
+apache-skywalking-apm-incubating-6.0.0-beta.tar.gz解压获取apache-skywalking-apm-bin/agent到ht-micro-record-external-skywalking下
+mvn clean package         获取ht-micro-record-external-skywalking/target/skywalking-6.0.0-Beta.tar.gz
 
 详情见：
 https://github.com/OneJane/blog
