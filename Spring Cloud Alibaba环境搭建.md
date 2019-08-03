@@ -383,6 +383,230 @@ ht-micro-record-commons
         </plugins>
     </build>
 ```
+# 创建通用的领域模型
+ht-micro-record-commons-domain
+
+``` 
+<parent>
+        <groupId>com.htdc</groupId>
+        <artifactId>ht-micro-record-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <artifactId>ht-micro-record-commons-domain</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ht-micro-record-commons-domain</name>
+    <url>http://www.htdatacloud.com/</url>
+    <inceptionYear>2019-Now</inceptionYear>
+
+    <dependencies>
+        <!-- Spring Begin -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- Spring End -->
+
+        <!-- Commons Begin -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <!-- Commons End -->
+
+        <!-- Projects Begin -->
+        <dependency>
+            <groupId>com.htdc</groupId>
+            <artifactId>ht-micro-record-commons</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <!-- Projects End -->
+    </dependencies>
+
+    <build>
+        <finalName>ht-micro-record-commons-domain</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <classifier>exec</classifier>
+                    <mainClass>com.ht.micro.record.commons.CommonsDomainApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+# 创建通用的数据访问
+ht-micro-record-commons-mapper
+
+``` 
+<parent>
+        <groupId>com.htdc</groupId>
+        <artifactId>ht-micro-record-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../ht-micro-record-dependencies/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ht-micro-record-commons-mapper</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ht-micro-record-commons-mapper</name>
+    <url>http://www.htdatacloud.com/</url>
+    <inceptionYear>2019-Now</inceptionYear>
+
+    <dependencies>
+        <!-- Spring Boot Begin -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- Spring Boot End -->
+
+        <!-- Commons Begin -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Commons End -->
+
+        <!-- Projects Begin -->
+        <dependency>
+            <groupId>com.htdc</groupId>
+            <artifactId>ht-micro-record-commons-domain</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <!-- Projects End -->
+    </dependencies>
+
+    <build>
+        <finalName>ht-micro-record-commons-domain</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <classifier>exec</classifier>
+                    <mainClass>com.ht.micro.record.commons.CommonsMapperApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+# 创建通用的业务逻辑 
+ht-micro-record-commons-service
+
+``` 
+<parent>
+        <groupId>com.htdc</groupId>
+        <artifactId>ht-micro-record-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../ht-micro-record-dependencies/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ht-micro-record-commons-service</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ht-micro-record-commons-service</name>
+    <url>http://www.htdatacloud.com/</url>
+    <inceptionYear>2019-Now</inceptionYear>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.htdc</groupId>
+            <artifactId>ht-micro-record-commons-mapper</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>ht-micro-record-commons-domain</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <classifier>exec</classifier>
+                    <mainClass>com.ht.micro.record.commons.CommonsMapperApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+# 创建通用的代码生成 
+ht-micro-record-database
+
+``` 
+<parent>
+        <groupId>com.htdc</groupId>
+        <artifactId>ht-micro-record-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../ht-micro-record-dependencies/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ht-micro-record-database</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ht-micro-record-database</name>
+    <url>http://www.htdatacloud.com/</url>
+    <inceptionYear>2018-Now</inceptionYear>
+
+    <dependencies>
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+            <version>4.1.4</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.3.5</version>
+                <configuration>
+                    <configurationFile>${basedir}/src/main/resources/generator/generatorConfig.xml</configurationFile>
+                    <overwrite>true</overwrite>
+                    <verbose>true</verbose>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.38</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>tk.mybatis</groupId>
+                        <artifactId>mapper</artifactId>
+                        <version>4.1.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+```
 
 详情见：
 https://github.com/OneJane/blog
