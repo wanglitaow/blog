@@ -202,7 +202,148 @@ lead登录将受到release-1.0的merge申请，点击merge后可以填写comment
 ```
 ![合并请求1](https://www.github.com/OneJane/blog/raw/master/小书匠/合并请求1.png)
 ![合并请求2](https://www.github.com/OneJane/blog/raw/master/小书匠/合并请求2.png)
- 
+ # Skywalking
+
+``` 
+mkdir /data2/skywalking
+vim docker-compose.yml
+version: '3.3'
+services:
+  elasticsearch:
+    image: wutang/elasticsearch-shanghai-zone:6.3.2
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - 191:9200
+      - 192:9300
+    environment:
+      cluster.name: elasticsearch
+docker-compose up -d
+https://mirrors.huaweicloud.com/apache/incubator/skywalking/6.0.0-beta/apache-skywalking-apm-incubating-6.0.0-beta.tar.gz
+tar zxf apache-skywalking-apm-incubating-6.0.0-beta.tar.gz
+cd apache-skywalking-apm-incubating
+vim apache-skywalking-apm-bin/config/application.yml        注释h2,打开es并修改clusterNodes地址
+#  h2:
+#    driver: ${SW_STORAGE_H2_DRIVER:org.h2.jdbcx.JdbcDataSource}
+#    url: ${SW_STORAGE_H2_URL:jdbc:h2:mem:skywalking-oap-db}
+#    user: ${SW_STORAGE_H2_USER:sa}
+  elasticsearch:
+    nameSpace: ${SW_NAMESPACE:""}
+    clusterNodes: ${SW_STORAGE_ES_CLUSTER_NODES:192.168.2.7:191}
+    indexShardsNumber: ${SW_STORAGE_ES_INDEX_SHARDS_NUMBER:2}
+    indexReplicasNumber: ${SW_STORAGE_ES_INDEX_REPLICAS_NUMBER:0}
+    # Batch process setting, refer to https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.5/java-docs-bulk-processor.html
+    bulkActions: ${SW_STORAGE_ES_BULK_ACTIONS:2000} # Execute the bulk every 2000 requests
+    bulkSize: ${SW_STORAGE_ES_BULK_SIZE:20} # flush the bulk every 20mb
+    flushInterval: ${SW_STORAGE_ES_FLUSH_INTERVAL:10} # flush the bulk every 10 seconds whatever the number of requests
+    concurrentRequests: ${SW_STORAGE_ES_CONCURRENT_REQUESTS:2} # the number of concurrent requests
+apache-skywalking-apm-incubating/webapp/webapp.yml
+port 193
+./apache-skywalking-apm-incubating/bin/startup.sh
+```
+# Sentinel
+
+``` 
+cd /data2/ && git clone https://github.com/alibaba/Sentinel.git
+cd Sentinel/
+mvn clean package -DskipTests
+cd sentinel-dashboard/target/
+nohup java -Dserver.port=190 -Dcsp.sentinel.dashboard.server=localhost:190 -Dproject.name=sentinel-dashboard -jar sentinel-dashboard.jar &
+```
+# RocketMQ
+
+``` 
+mkdir /data2/RocketMQ
+vim docker-compose.yml
+version: '3.5'
+services:
+  rmqnamesrv:
+    image: foxiswho/rocketmq:server
+    container_name: rmqnamesrv
+    ports:
+      - 187:9876
+    volumes:
+      - ./data/logs:/opt/logs
+      - ./data/store:/opt/store
+    networks:
+        rmq:
+          aliases:
+            - rmqnamesrv
+
+
+
+
+  rmqbroker:
+    image: foxiswho/rocketmq:broker
+    container_name: rmqbroker
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ./data/logs:/opt/logs
+      - ./data/store:/opt/store
+      - ./data/brokerconf/broker.conf:/etc/rocketmq/broker.conf
+    environment:
+        NAMESRV_ADDR: "rmqnamesrv:9876"
+        JAVA_OPTS: " -Duser.home=/opt"
+        JAVA_OPT_EXT: "-server -Xms128m -Xmx128m -Xmn128m"
+    command: mqbroker -c /etc/rocketmq/broker.conf
+    depends_on:
+      - rmqnamesrv
+    networks:
+      rmq:
+        aliases:
+          - rmqbroker
+
+
+
+
+  rmqconsole:
+    image: styletang/rocketmq-console-ng
+    container_name: rmqconsole
+    ports:
+      - 8088:8080
+    environment:
+        JAVA_OPTS: "-Drocketmq.namesrv.addr=rmqnamesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - rmqnamesrv
+    networks:
+      rmq:
+        aliases:
+          - rmqconsole
+
+
+
+
+networks:
+  rmq:
+    name: rmq
+    driver: bridge
+
+
+vim /data2/RocketMQ/data/brokerconf/broker.conf
+brokerClusterName=DefaultCluster
+brokerName=broker-a
+brokerId=0
+brokerIP1=192.168.2.7
+defaultTopicQueueNums=4
+autoCreateTopicEnable=true
+autoCreateSubscriptionGroup=true
+listenPort=10911
+deleteWhen=04
+fileReservedTime=120
+mapedFileSizeCommitLog=1073741824
+mapedFileSizeConsumeQueue=300000
+diskMaxUsedSpaceRatio=88
+maxMessageSize=65536
+brokerRole=ASYNC_MASTER
+flushDiskType=ASYNC_FLUSH
+
+
+docker-compose up -d
+docker-compose down
+http://192.168.2.7:8088/
+```
 
 详情见：
 https://github.com/OneJane/blog
