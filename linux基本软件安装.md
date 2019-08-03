@@ -345,5 +345,37 @@ docker-compose down
 http://192.168.2.7:8088/
 ```
 
+# jenkins
+
+``` 
+rpm -qa|grep jenkins    搜索已安装
+rpm -e --nodeps jenkins-2.83-1.1.noarch
+find / -name jenkins*|xargs rm -rf
+rpm -ivh jdk-8u171-linux-x64.rpm        安装java
+http://mirrors.jenkins.io/redhat/jenkins-2.180-1.1.noarch.rpm
+rpm -ivh jenkins-2.180-1.1.noarch.rpm       安装jenkins新版本
+vi /etc/sysconfig/jenkins
+JENKINS_USER="root"
+JENKINS_PORT="181"
+vim /etc/rc.d/init.d/jenkins 修改candidates
+/data2/jdk/bin/java
+systemctl daemon-reload
+systemctl restart jenkins
+http://192.168.2.7:181
+cat /var/lib/jenkins/secrets/initialAdminPassword    初始密码串并安装默认的插件
+vim /var/lib/jenkins/hudson.model.UpdateCenter.xml    必须在填写完密码后修改
+改https为http或者改为http://mirror.xmission.com/jenkins/updates/update-center.json
+systemctl restart jenkins
+若页面空白/var/lib/jenkins/config.xml
+<authorizationStrategy class="hudson.security.AuthorizationStrategy$Unsecured"/>
+<securityRealm class="hudson.security.SecurityRealm$None"/>
+
+ 
+系统管理-全局工具配置:/data2/maven    /data2/jdk  /data2/maven/conf/settings.xml
+安装插件：Maven Integration，GitHub plugin，Git plugin
+新建任务时，丢弃旧的构建，保持构建的天数3，保持构建的最大个数5
+```
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564814498470.png)
+
 详情见：
 https://github.com/OneJane/blog
