@@ -107,6 +107,18 @@ services:
       - ENV_DOCKER_REGISTRY_PORT=5000
 ```
 使用<kbd>docker-compose up -d</kbd>启动registry容器，http://192.168.2.5:184/ 访问私有镜像库
+
+``` 
+curl -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" 192.168.2.7:5000/v2/ht-micro-record-service-user/manifests/1.0.0-SNAPSHOT    查看镜像Etag
+curl -I -H "Accept: application/vnd.docker.distribution.manifest.v2+json" 192.168.2.5:5000/v2/ht-micro-record-commons/manifests/1.0.0-SNAPSHOT  查看镜像Etag
+curl -i -X DELETE 192.168.2.5:5000/v2/codewj-redis-cluster/manifests/sha256:d6d6fad1ac67310ee34adbaa72986c6b233bd713906013961c722ecb10a049e5    删除codewj-redis-cluster:latest镜像
+curl -I -X DELETE http://192.168.2.7:5000/v2/ht-micro-record-service-user/manifests/sha256:a6d4e02fa593f0ae30476bda8d992dcb0fc2341e6fef85a9887444b5e4b75a04 删除user镜像
+
+docker exec -it registry registry garbage-collect /etc/docker/registry/config.yml        垃圾回收blob
+docker exec registry rm -rf /var/lib/registry/docker/registry/v2/repositories/codewj-redis-cluster 强制删除
+docker exec registry rm -rf /var/lib/registry/docker/registry/v2/repositories/ht-micro-record-service-user  强制删除
+```
+
 # JDK镜像制作
 ## 环境配置
 
