@@ -261,7 +261,7 @@ services:
     image: foxiswho/rocketmq:server
     container_name: rmqnamesrv
     ports:
-      - 187:9876
+      - 9876:9876
     volumes:
       - ./data/logs:/opt/logs
       - ./data/store:/opt/store
