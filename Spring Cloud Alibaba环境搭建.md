@@ -750,5 +750,43 @@ ht-micro-record-external-skywalking/src/main/assembly/assembly.xml
 apache-skywalking-apm-incubating-6.0.0-beta.tar.gz解压获取apache-skywalking-apm-bin/agent到ht-micro-record-external-skywalking下
 mvn clean package         获取ht-micro-record-external-skywalking/target/skywalking-6.0.0-Beta.tar.gz
 
+``` 
+mkdir /data2/skywalking
+vim docker-compose.yml
+version: '3.3'
+services:
+  elasticsearch:
+    image: wutang/elasticsearch-shanghai-zone:6.3.2
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - 191:9200
+      - 192:9300
+    environment:
+      cluster.name: elasticsearch
+docker-compose up -d
+https://mirrors.huaweicloud.com/apache/incubator/skywalking/6.0.0-beta/apache-skywalking-apm-incubating-6.0.0-beta.tar.gz
+tar zxf apache-skywalking-apm-incubating-6.0.0-beta.tar.gz
+cd apache-skywalking-apm-incubating
+vim apache-skywalking-apm-bin/config/application.yml        注释h2,打开es并修改clusterNodes地址
+#  h2:
+#    driver: ${SW_STORAGE_H2_DRIVER:org.h2.jdbcx.JdbcDataSource}
+#    url: ${SW_STORAGE_H2_URL:jdbc:h2:mem:skywalking-oap-db}
+#    user: ${SW_STORAGE_H2_USER:sa}
+  elasticsearch:
+    nameSpace: ${SW_NAMESPACE:""}
+    clusterNodes: ${SW_STORAGE_ES_CLUSTER_NODES:192.168.2.7:191}
+    indexShardsNumber: ${SW_STORAGE_ES_INDEX_SHARDS_NUMBER:2}
+    indexReplicasNumber: ${SW_STORAGE_ES_INDEX_REPLICAS_NUMBER:0}
+    # Batch process setting, refer to https://www.elastic.co/guide/en/elasticsearch/client/java-api/5.5/java-docs-bulk-processor.html
+    bulkActions: ${SW_STORAGE_ES_BULK_ACTIONS:2000} # Execute the bulk every 2000 requests
+    bulkSize: ${SW_STORAGE_ES_BULK_SIZE:20} # flush the bulk every 20mb
+    flushInterval: ${SW_STORAGE_ES_FLUSH_INTERVAL:10} # flush the bulk every 10 seconds whatever the number of requests
+    concurrentRequests: ${SW_STORAGE_ES_CONCURRENT_REQUESTS:2} # the number of concurrent requests
+apache-skywalking-apm-incubating/webapp/webapp.yml
+port 193
+./apache-skywalking-apm-incubating/bin/startup.sh
+```
+
 详情见：
 https://github.com/OneJane/blog
