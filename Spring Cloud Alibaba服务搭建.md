@@ -790,6 +790,13 @@ public class BeanValidator {
 │          ├─baseMapper
 │          └─dicMapper
 mapper分开存储用来识别多数据源
+tk.mybatis.mapper.MyMapper
+
+``` php
+public interface MyMapper<T> extends Mapper<T>, MySqlMapper<T> {
+}
+```
+
 
 # 集成Swagger2
 ht-micro-record-commons/pom.xml
