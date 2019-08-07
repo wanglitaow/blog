@@ -1402,6 +1402,331 @@ public class UserController extends AbstractBaseController<TbUser> {
     }
 }
 ```
+## ht-micro-record-service-sms
+
+``` dust
+    <parent>
+        <groupId>com.htdc</groupId>
+        <artifactId>ht-micro-record-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../ht-micro-record-dependencies/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>ht-micro-record-service-sms</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ht-micro-record-service-sms</name>
+    <url>http://www.htdatacloud.com/</url>
+    <inceptionYear>2019-Now</inceptionYear>
+
+    <dependencies>
+        <!-- Spring Boot Begin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <!-- Spring Boot End -->
+
+        <!-- Spring Cloud Begin -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hdrhistogram</groupId>
+                    <artifactId>HdrHistogram</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rocketmq</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Spring Cloud End -->
+
+        <!-- Projects Begin -->
+        <dependency>
+            <groupId>com.htdc</groupId>
+            <artifactId>ht-micro-record-commons-domain</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <!-- Projects End -->
+    </dependencies>
+
+
+    <build>
+        <finalName>ht-micro-record-service-sms</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.ht.micro.record.service.email.SmsServiceApplication</mainClass>
+                </configuration>
+            </plugin>
+            <!-- docker的maven插件，官网 https://github.com/spotify/docker-maven-plugin -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <configuration>
+                    <imageName>192.168.2.7:5000/${project.artifactId}:${project.version}</imageName>
+                    <baseImage>jdk1.8</baseImage>
+                    <entryPoint>["java", "-jar","/${project.build.finalName}.jar"]</entryPoint>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <dockerHost>http://192.168.2.7:2375</dockerHost>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+application.yml
+
+``` yaml
+spring:
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: 192.168.2.7:9876
+        bindings:
+          input:
+            consumer:
+              orderly: true
+      bindings:
+        input:
+          destination: topic-email
+          content-type: application/json
+          group: group-email
+          consumer:
+            maxAttempts: 1
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+```
+bootstrap.properties
+
+``` stylus
+spring.application.name=ht-micro-record-service-sms-config
+spring.cloud.nacos.config.file-extension=yaml
+spring.cloud.nacos.config.server-addr=192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+```
+nacos配置
+
+``` less
+spring:
+  application:
+    name: ht-micro-record-service-sms
+  mail:
+    host: smtp.163.com
+    port: 25
+    # 你的邮箱授权码
+    password: codewj123456
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    # 发送邮件的邮箱地址
+    username: m15806204096@163.com
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: 192.168.2.7:190
+
+
+server:
+  port: 9507
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+```
+com.ht.micro.record.service.email.SmsServiceApplication
+
+``` less
+@SpringBootApplication(scanBasePackages = "com.ht.micro.record")
+@EnableDiscoveryClient
+@EnableBinding({Sink.class})
+@EnableAsync
+public class SmsServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SmsServiceApplication.class, args);
+    }
+}
+```
+com.ht.micro.record.service.email.service.EmailService
+
+``` java
+@Service
+public class EmailService {
+
+    @Autowired
+    private ConfigurableApplicationContext applicationContext;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    @StreamListener("input")
+    public void receive(String json) {
+        try {
+            // 发送普通邮件
+            TbUser tbUser = MapperUtils.json2pojo(json, TbUser.class);
+            sendEmail("欢迎注册", "欢迎 " + tbUser.getUsername() + " 加入华通晟云！", tbUser.getEmail());
+
+            // 发送 HTML 模板邮件
+            Context context = new Context();
+            context.setVariable("username", tbUser.getUsername());
+            String emailTemplate = templateEngine.process("reg", context);
+            sendTemplateEmail("欢迎注册", emailTemplate, tbUser.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 发送普通邮件
+     * @param subject
+     * @param body
+     * @param to
+     */
+    @Async
+    public void sendEmail(String subject, String body, String to) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(applicationContext.getEnvironment().getProperty("spring.mail.username"));
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+        javaMailSender.send(message);
+    }
+
+    /**
+     * 发送 HTML 模板邮件
+     * @param subject
+     * @param body
+     * @param to
+     */
+    @Async
+    public void sendTemplateEmail(String subject, String body, String to) {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(applicationContext.getEnvironment().getProperty("spring.mail.username"));
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body, true);
+            javaMailSender.send(message);
+        } catch (Exception e) {
+
+        }
+    }
+}
+```
+templates/reg.html
+
+``` dust
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>注册通知</title>
+</head>
+<body>
+    <div>
+        欢迎 <span th:text="${username}"></span> 加入 华通晟云！！
+    </div>
+</body>
+</html>
+```
 
 # 集成Swagger2
 ht-micro-record-commons/pom.xml
