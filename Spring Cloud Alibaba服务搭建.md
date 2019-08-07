@@ -920,7 +920,488 @@ public class TbUserServiceImpl extends BaseCrudServiceImpl<TbUser, TbUserMapper>
 }
 ```
 ## ht-micro-record-service-user
+``` dust
+ <parent>
+        <groupId>com.htdc</groupId>
+        <artifactId>ht-micro-record-dependencies</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
 
+    <artifactId>ht-micro-record-service-user</artifactId>
+    <packaging>jar</packaging>
+
+    <name>ht-micro-record-service-user</name>
+    <url>http://www.htdatacloud.com/</url>
+    <inceptionYear>2019-Now</inceptionYear>
+
+    <dependencies>
+        <!-- Spring Boot Begin -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Spring Boot End -->
+
+        <!-- Spring Cloud Begin -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hdrhistogram</groupId>
+                    <artifactId>HdrHistogram</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hdrhistogram</groupId>
+                    <artifactId>HdrHistogram</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rocketmq</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>fastjson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Spring Cloud End -->
+
+        <!-- Projects Begin -->
+        <dependency>
+            <groupId>com.htdc</groupId>
+            <artifactId>ht-micro-record-commons-service</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+
+        <!-- Projects End -->
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- docker的maven插件，官网 https://github.com/spotify/docker-maven-plugin -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <configuration>
+                    <imageName>192.168.2.7:5000/${project.artifactId}:${project.version}</imageName>
+                    <baseImage>onejane-jdk1.8 </baseImage>
+                    <entryPoint>["java", "-jar","/${project.build.finalName}.jar"]</entryPoint>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <dockerHost>http://192.168.2.7:2375</dockerHost>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.ht.micro.record.UserServiceApplication</mainClass>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+```
+application.yml
+配置多数据源及RocketMQ
+``` less
+spring:
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: 192.168.2.7:9876
+      bindings:
+        output:
+          content-type: application/json
+          destination: topic-email
+          producer:
+            group: group-email
+  datasource:
+      base:
+        #监控统计拦截的filters
+        filters: stat
+        type: com.alibaba.druid.pool.DruidDataSource
+        jdbc-url: jdbc:mysql://192.168.2.7:185/ht_micro_record?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.jdbc.Driver
+        max-idle: 10
+        max-wait: 10000
+        min-idle: 5
+        initial-size: 5
+        validation-query: SELECT 1
+        test-on-borrow: false
+        test-while-idle: true
+        time-between-eviction-runs-millis: 18800
+      dic:
+        #监控统计拦截的filters
+        filters: stat
+        type: com.alibaba.druid.pool.DruidDataSource
+        jdbc-url: jdbc:mysql://192.168.1.48:3306/ht_nlp?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+        username: root
+        password: Sonar@1234
+        driver-class-name: com.mysql.jdbc.Driver
+        max-idle: 10
+        max-wait: 10000
+        min-idle: 5
+        initial-size: 5
+        validation-query: SELECT 1
+        test-on-borrow: false
+        test-while-idle: true
+        time-between-eviction-runs-millis: 18800
+```
+bootstrap.properties
+
+``` stylus
+spring.application.name=ht-micro-record-service-user-config
+spring.cloud.nacos.config.file-extension=yaml
+spring.cloud.nacos.config.server-addr=192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+logging.level.com.ht.micro.record=DEBUG
+```
+nacos配置
+
+``` less
+spring:
+  application:
+    name: ht-micro-record-service-user
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: 192.168.2.7:190
+
+
+server:
+  port: 9506
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+```
+com.ht.micro.record.UserServiceApplication
+
+``` less
+@SpringBootApplication(scanBasePackages = "com.ht.micro.record",exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, MybatisAutoConfiguration.class})
+@EnableDiscoveryClient
+@EnableBinding({Source.class})
+@MapperScan(basePackages = "com.ht.micro.record.commons.mapper")
+@EnableAsync
+@EnableSwagger2
+public class UserServiceApplication {
+    
+    public static void main(String[] args) {
+        SpringApplication.run(UserServiceApplication.class, args);
+    }
+}
+```
+com.ht.micro.record.user.config.BaseMybatisConfig
+
+``` kotlin
+@Configuration
+@MapperScan(basePackages = {"com.ht.micro.record.commons.mapper.baseMapper"}, sqlSessionTemplateRef = "baseSqlSessionTemplate")
+public class BaseMybatisConfig {
+
+    @Value("${spring.datasource.base.filters}")
+    String filters;
+    @Value("${spring.datasource.base.driver-class-name}")
+    String driverClassName;
+    @Value("${spring.datasource.base.username}")
+    String username;
+    @Value("${spring.datasource.base.password}")
+    String password;
+    @Value("${spring.datasource.base.jdbc-url}")
+    String url;
+
+
+    @Bean(name="baseDataSource")
+    @Primary//必须加此注解，不然报错，下一个类则不需要添加 spring.datasource
+    @ConfigurationProperties(prefix="spring.datasource.base")//prefix值必须是application.properteis中对应属性的前缀
+    public DataSource baseDataSource() throws SQLException {
+
+
+        DruidDataSource druid = new DruidDataSource();
+        // 监控统计拦截的filters
+        druid.setFilters(filters);
+        // 配置基本属性
+        druid.setDriverClassName(driverClassName);
+        druid.setUsername(username);
+        druid.setPassword(password);
+        druid.setUrl(url);
+
+        return druid;
+    }
+
+
+    @Bean(name="baseSqlSessionFactory")
+    @Primary
+    public SqlSessionFactory baseSqlSessionFactory(@Qualifier("baseDataSource")DataSource dataSource)throws Exception{
+        // 创建Mybatis的连接会话工厂实例
+        SqlSessionFactoryBean bean=new SqlSessionFactoryBean();
+        bean.setDataSource(dataSource);//// 设置数据源bean
+        //添加XML目录
+        ResourcePatternResolver resolver=new PathMatchingResourcePatternResolver();
+        try{
+            bean.setMapperLocations(resolver.getResources("classpath:baseMapper/*Mapper.xml"));//// 设置mapper文件路径
+            return bean.getObject();
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Bean(name="baseSqlSessionTemplate")
+    @Primary
+    public SqlSessionTemplate baseSqlSessionTemplate(@Qualifier("baseSqlSessionFactory")SqlSessionFactory sqlSessionFactory)throws Exception{
+        SqlSessionTemplate template=new SqlSessionTemplate(sqlSessionFactory);//使用上面配置的Factory
+        return  template;
+    }
+
+}
+```
+com.ht.micro.record.user.config.DicMybatisConfig
+
+``` kotlin
+@Configuration
+@MapperScan(basePackages = {"com.ht.micro.record.commons.mapper.dicMapper"}, sqlSessionTemplateRef = "dicSqlSessionTemplate")
+public class DicMybatisConfig {
+    @Value("${spring.datasource.dic.filters}")
+    String filters;
+    @Value("${spring.datasource.dic.driver-class-name}")
+    String driverClassName;
+    @Value("${spring.datasource.dic.username}")
+    String username;
+    @Value("${spring.datasource.dic.password}")
+    String password;
+    @Value("${spring.datasource.dic.jdbc-url}")
+    String url;
+
+
+    @Bean(name = "dicDataSource")
+    @ConfigurationProperties(prefix="spring.datasource.dic")
+    public DataSource dicDataSource() throws SQLException {
+
+        DruidDataSource druid = new DruidDataSource();
+        // 监控统计拦截的filters
+       // druid.setFilters(filters);
+        // 配置基本属性
+        druid.setDriverClassName(driverClassName);
+        druid.setUsername(username);
+        druid.setPassword(password);
+        druid.setUrl(url);
+
+       /* //初始化时建立物理连接的个数
+        druid.setInitialSize(initialSize);
+        //最大连接池数量
+        druid.setMaxActive(maxActive);
+        //最小连接池数量
+        druid.setMinIdle(minIdle);
+        //获取连接时最大等待时间，单位毫秒。
+        druid.setMaxWait(maxWait);
+        //间隔多久进行一次检测，检测需要关闭的空闲连接
+        druid.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+        //一个连接在池中最小生存的时间
+        druid.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        //用来检测连接是否有效的sql
+        druid.setValidationQuery(validationQuery);
+        //建议配置为true，不影响性能，并且保证安全性。
+        druid.setTestWhileIdle(testWhileIdle);
+        //申请连接时执行validationQuery检测连接是否有效
+        druid.setTestOnBorrow(testOnBorrow);
+        druid.setTestOnReturn(testOnReturn);
+        //是否缓存preparedStatement，也就是PSCache，oracle设为true，mysql设为false。分库分表较多推荐设置为false
+        druid.setPoolPreparedStatements(poolPreparedStatements);
+        // 打开PSCache时，指定每个连接上PSCache的大小
+        druid.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
+*/
+        return druid;
+    }
+
+    @Bean(name = "dicSqlSessionFactory")
+    public SqlSessionFactory dicSqlSessionFactory(@Qualifier("dicDataSource")DataSource dataSource)throws Exception{
+        SqlSessionFactoryBean bean=new SqlSessionFactoryBean();
+        bean.setDataSource(dataSource);
+        //添加XML目录
+        ResourcePatternResolver resolver=new PathMatchingResourcePatternResolver();
+        try{
+            bean.setMapperLocations(resolver.getResources("classpath:dicMapper/*Mapper.xml"));
+            return bean.getObject();
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Bean(name="dicSqlSessionTemplate")
+    public SqlSessionTemplate dicSqlSessionTemplate(@Qualifier("dicSqlSessionFactory")SqlSessionFactory sqlSessionFactory)throws Exception{
+        SqlSessionTemplate template=new SqlSessionTemplate(sqlSessionFactory);//使用上面配置的Factory
+        return  template;
+    }
+
+}
+```
+com.ht.micro.record.user.service.UserService
+
+``` java
+@Service
+public class UserService {
+
+
+    @Autowired
+    private MessageChannel output;
+
+
+    // @EnableAsync在Application中开启异步
+    @Async
+    public void sendEmail(TbUser tbUser) throws Exception {
+        output.send(MessageBuilder.withPayload(MapperUtils.obj2json(tbUser)).build());
+    }
+
+
+}
+```
+com.ht.micro.record.user.controller.UserController
+
+``` kotlin
+@RestController
+@RequestMapping(value = "user")
+public class UserController extends AbstractBaseController<TbUser> {
+    @Autowired
+    private TbUserService tbUserService;
+    @Autowired
+    private UserService userService;
+
+    // http://localhost:9506/user/2
+    //
+    @ApiOperation(value = "查询用户", notes = "根据id获取用户名")
+    @GetMapping(value = {"{id}"})
+    public String getName(@PathVariable long id){
+        return tbUserService.getById(id).getUsername();
+    }
+
+    @ApiOperation(value = "用户注册", notes = "参数为实体类，注意用户名和邮箱不要重复")
+    @PostMapping(value = "reg")
+    public AbstractBaseResult reg(@ApiParam(name = "tbUser", value = "用户模型") TbUser tbUser) {
+        // 数据校验
+        String message = BeanValidator.validator(tbUser);
+        if (StringUtils.isNotBlank(message)) {
+            return error(message, null);
+        }
+
+
+        // 验证密码是否为空
+        if (StringUtils.isBlank(tbUser.getPassword())) {
+            return error("密码不可为空", null);
+        }
+
+
+        // 验证用户名是否重复
+        if (!tbUserService.unique("username", tbUser.getUsername())) {
+            return error("用户名已存在", null);
+        }
+
+
+        // 验证邮箱是否重复
+        if (!tbUserService.unique("email", tbUser.getEmail())) {
+            return error("邮箱重复，请重试", null);
+        }
+
+
+        // 注册用户
+        try {
+            tbUser.setPassword(DigestUtils.md5DigestAsHex(tbUser.getPassword().getBytes()));
+            TbUser user = tbUserService.save(tbUser);
+            if (user != null) {
+                userService.sendEmail(user);
+                response.setStatus(HttpStatus.CREATED.value());
+                return success(request.getRequestURI(), user);
+            }
+        } catch (Exception e) {
+            // 这里补一句，将 RegService 中的异常抛到 Controller 中，这样可以打印出调试信息
+            return error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "注册邮件发送失败", e.getMessage());
+        }
+
+
+        // 注册失败
+        return error("注册失败，请重试", null);
+    }
+}
+```
 
 # 集成Swagger2
 ht-micro-record-commons/pom.xml
@@ -990,9 +1471,10 @@ com.ht.micro.record.user.controller.UserController
 ```
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564815890566.png)
 http://192.168.3.233:9501/user/10 调用服务
-http://192.168.2.5:193/#/monitor/dashboard 查看skywalking的链路追踪 
+http://192.168.2.7:193/#/monitor/dashboard 查看skywalking的链路追踪 
 
 详情见：
 https://github.com/OneJane/blog
+
 
 
