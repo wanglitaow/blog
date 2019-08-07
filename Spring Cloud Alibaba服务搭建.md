@@ -919,6 +919,8 @@ public class TbUserServiceImpl extends BaseCrudServiceImpl<TbUser, TbUserMapper>
 
 }
 ```
+## ht-micro-record-service-user
+
 
 # 集成Swagger2
 ht-micro-record-commons/pom.xml
