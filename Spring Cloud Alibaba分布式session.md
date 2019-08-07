@@ -218,5 +218,15 @@ public class UserController extends AbstractBaseController<TbUser> {
 ```
 http://localhost:9507/user 登陆后，进入http://localhost:9507/user/login 页面查看用户信息
 手动进入http://localhost:9506/user/home 查看相同用户信息，User实体位置在两个服务中保持一致。
+如果项目中有es配置，需要es优先配置Netty
+``` aspectj
+@PostConstruct
+    public void init() {
+        /*由于netty的冲突，需要在ElasticConfig中显示指定早于RedisConfig装配，并且指定初始化时再一次添加忽略es中netty的一些配置*/
+        System.setProperty("es.set.netty.runtime.available.processors", "false");
+    	bulkRequest = elasticClientSingleton.getBulkRequest(esConfig);
+    }
+```
+
 详情见：
 https://github.com/OneJane/blog
