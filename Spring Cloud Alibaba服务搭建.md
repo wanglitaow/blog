@@ -1727,7 +1727,7 @@ templates/reg.html
 </body>
 </html>
 ```
-
+post http://localhost:9506/user/reg?password=123456&username=codewj&email=1051103813@qq.com 实现注册
 # 集成Swagger2
 ht-micro-record-commons/pom.xml
 
