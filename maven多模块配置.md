@@ -57,6 +57,24 @@ mvn install:install-file -DgroupId=org.csource.fastdfs -DartifactId=fastdfs -Dve
 </plugins>
 ```
 由于 Maven 内置了 maven-compiler-plugin 与生命周期的绑定，因此子模块就不再需要任何 maven-compiler-plugin 的配置了。
+		
+资源打包配置
+``` dust
+<resources>
+			<resource>
+				<targetPath>${project.build.directory}/classes</targetPath>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+					<include>**/*.yml</include>
+					<include>**/*.txt</include>
+				</includes>
+			</resource>
+		</resources>
+```
+
 # dependencyManagement
 
 ``` xml
