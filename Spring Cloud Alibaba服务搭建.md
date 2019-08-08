@@ -1797,6 +1797,7 @@ com.ht.micro.record.user.controller.UserController
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564815890566.png)
 http://192.168.3.233:9501/user/10 调用服务
 http://192.168.2.7:193/#/monitor/dashboard 查看skywalking的链路追踪 
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565245719246.png)
 
 详情见：
 https://github.com/OneJane/blog
