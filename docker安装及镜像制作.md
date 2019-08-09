@@ -58,6 +58,12 @@ sudo apt-get -y install docker-ce
 ## Docker配置及基本使用
 
 ``` 
+vim ~/.bashrc
+alias dops='docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t"'
+alias dopsa='docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t"'
+alias dolo='docker logs -ft'
+
+
 vim /etc/docker/daemon.json
 {
   "registry-mirrors": ["https://3gki6pei.mirror.aliyuncs.com"],
