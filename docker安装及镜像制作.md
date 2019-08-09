@@ -266,7 +266,7 @@ protected-mode no
 ```
 
 # 手动部署
-
+安装黑体字体
 ``` dts
 yum  -y  install  fontconfig
 fc-list :lang=zh
