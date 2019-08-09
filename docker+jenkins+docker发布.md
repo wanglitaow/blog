@@ -27,6 +27,18 @@ parent.relativePath修改为<relativePath />，发布单个服务时设定一个
 # 微服务提供者
 
 ``` xml
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<name>Nexus Release Repository</name>
+			<url>http://192.168.2.7:182/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://192.168.2.7:182/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 <build>
     <finalName>ht-micro-record-service-note-consumer</finalName>
     <plugins>
