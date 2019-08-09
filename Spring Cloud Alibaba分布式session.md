@@ -121,8 +121,8 @@ application.yml
 所有模块加入redis配置
 ``` yaml
 redis:
-    host: 127.0.0.1
-    port: 6379
+    #host: 127.0.0.1
+    #port: 6379
     jedis:
       pool:
         # 连接池最大连接数,使用负值表示无限制。
@@ -137,6 +137,8 @@ redis:
     session:
       # session 存储方式 支持redis、mongo、jdbc、hazelcast
       store-type: redis
+	cluster:
+      nodes: 192.168.2.5:8001,192.168.2.5:8002,192.168.2.5:8003,192.168.2.7:8004,192.168.2.7:8005,192.168.2.7:8006  
 
   # 如果是集群节点 采用如下配置指定节点
   #spring.redis.cluster.nodes
