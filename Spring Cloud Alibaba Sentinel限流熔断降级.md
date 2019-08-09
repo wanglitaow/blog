@@ -244,6 +244,25 @@ vim pom.xml
             <!--<scope>test</scope>-->
         </dependency>
 ```
+修改resources/app/scripts/directives/sidebar/sidebar.html
+
+``` dust
+<li ui-sref-active="active">
+    <a ui-sref="dashboard.flowV1({app: entry.app})">
+        <i class="glyphicon glyphicon-filter"></i>&nbsp;&nbsp;流控规则
+    </a>
+</li>
+```
+为
+
+``` dust
+<li ui-sref-active="active">
+    <a ui-sref="dashboard.flow({app: entry.app})">
+        <i class="glyphicon glyphicon-filter"></i>&nbsp;&nbsp;流控规则
+    </a>
+</li>
+```
+
 com.alibaba.csp.sentinel.dashboard.rule.nacos.NacosConfigConstant
 
 ``` processing
@@ -453,6 +472,176 @@ com.alibaba.csp.sentinel.dashboard.controller.FlowControllerV1
         }
     }	
 ```
+## DegradeRule
+com.alibaba.csp.sentinel.dashboard.rule.nacos.DegradeRuleNacosPublisher
 
+``` groovy
+@Component("degradeRuleNacosPublisher")
+public class DegradeRuleNacosPublisher implements DynamicRulePublisher<List<DegradeRuleEntity>> {
+
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired
+    private NacosConfigProperties nacosConfigProperties;
+
+    @Override
+    public void publish(String app, List<DegradeRuleEntity> rules) throws Exception {
+        AssertUtil.notEmpty(app, "app name cannot be empty");
+        if (rules == null) {
+            return;
+        }
+        configService.publishConfig(app + NacosConfigConstant.DEGRADE_DATA_ID_POSTFIX,
+                nacosConfigProperties.getGroupId(),
+                JSON.toJSONString(rules.stream().map(DegradeRuleEntity::toRule).collect(Collectors.toList())));
+    }
+}
+```
+com.alibaba.csp.sentinel.dashboard.rule.nacos.DegradeRuleNacosProvider
+
+``` groovy
+@Component("degradeRuleNacosProvider")
+public class DegradeRuleNacosProvider implements DynamicRuleProvider<List<DegradeRuleEntity>> {
+
+    private static Logger logger = LoggerFactory.getLogger(DegradeRuleNacosProvider.class);
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired
+    private NacosConfigProperties nacosConfigProperties;
+
+    @Override
+    public List<DegradeRuleEntity> getRules(String appName) throws Exception {
+        String rulesStr = configService.getConfig(appName + NacosConfigConstant.DEGRADE_DATA_ID_POSTFIX,
+                nacosConfigProperties.getGroupId(), 3000);
+        logger.info("nacosConfigProperties{}:", nacosConfigProperties);
+        logger.info("从Nacos中获取到熔断降级规则信息{}", rulesStr);
+        if (StringUtil.isEmpty(rulesStr)) {
+            return new ArrayList<>();
+        }
+        List<DegradeRule> rules = RuleUtils.parseDegradeRule(rulesStr);
+
+        if (rules != null) {
+            return rules.stream().map(rule -> DegradeRuleEntity.fromDegradeRule(appName, nacosConfigProperties.getIp(), Integer.valueOf(nacosConfigProperties.getPort()), rule))
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+}
+```
+com.alibaba.csp.sentinel.dashboard.controller.DegradeController
+去除
+
+``` 
+@Autowired
+    private SentinelApiClient sentinelApiClient;
+```
+新增
+
+``` 
+@Autowired
+    @Qualifier("degradeRuleNacosProvider")
+    private DynamicRuleProvider<List<DegradeRuleEntity>> provider;
+
+    @Autowired
+    @Qualifier("degradeRuleNacosPublisher")
+    private DynamicRulePublisher<List<DegradeRuleEntity>> publisher;
+	@ResponseBody
+    @RequestMapping("/rules.json")
+    public Result<List<DegradeRuleEntity>> queryMachineRules(HttpServletRequest request, String app, String ip, Integer port) {
+        AuthUser authUser = authService.getAuthUser(request);
+        authUser.authTarget(app, PrivilegeType.READ_RULE);
+
+        if (StringUtil.isEmpty(app)) {
+            return Result.ofFail(-1, "app can't be null or empty");
+        }
+        if (StringUtil.isEmpty(ip)) {
+            return Result.ofFail(-1, "ip can't be null or empty");
+        }
+        if (port == null) {
+            return Result.ofFail(-1, "port can't be null");
+        }
+        try {
+            List<DegradeRuleEntity> rules = provider.getRules(app);
+            rules = repository.saveAll(rules);
+            return Result.ofSuccess(rules);
+        } catch (Throwable throwable) {
+            logger.error("queryApps error:", throwable);
+            return Result.ofThrowable(-1, throwable);
+        }
+    }
+	   private boolean publishRules(String app, String ip, Integer port) {
+        List<DegradeRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
+        try {
+            publisher.publish(app, rules);
+            logger.info("添加熔断降级规则成功{}", JSON.toJSONString(rules.stream().map(DegradeRuleEntity::toRule).collect(Collectors.toList())));
+            return true;
+        } catch (Exception e) {
+            logger.info("添加熔断降级规则失败{}",JSON.toJSONString(rules.stream().map(DegradeRuleEntity::toRule).collect(Collectors.toList())));
+            e.printStackTrace();
+            return false;
+        }
+    }
+```
+重新打包启动
+
+``` 
+mvn clean package -DskipTests
+cd sentinel-dashboard/target/
+nohup java -Dserver.port=190 -Dcsp.sentinel.dashboard.server=localhost:190 -Dproject.name=sentinel-dashboard -jar sentinel-dashboard.jar &
+```
+项目中bootstrap.yml
+
+``` yaml
+spring:
+  application:
+    name: ht-micro-record-service-dubbo-provider
+  cloud:
+    nacos:
+      config:
+        file-extension: yaml
+        server-addr: 192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+    sentinel:
+      transport:
+        port: 8720
+        dashboard: localhost:8080
+      datasource:
+        ds:
+          nacos:
+            dataId: ${spring.application.name}-flow-rules
+            groupId: DEFAULT_GROUP
+            rule-type: flow # 流控
+#            rule-type: degrade # 熔断
+            data-type: json
+            server-addr: 192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+        ds1:
+          nacos:
+            dataId: ${spring.application.name}-degrade-rules
+            groupId: DEFAULT_GROUP
+            rule-type: degrade # 熔断
+            data-type: json
+            server-addr: 192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+```
+nacos配置ht-micro-record-service-dubbo-provider.yaml
+
+``` 
+spring:
+  application:
+    name: ht-micro-record-service-dubbo-provider
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.2.7:8848,192.168.2.7:8849,192.168.2.7:8850
+
+server:
+  port: 9502
+```
+http://localhost:8080/#/dashboard 新增规则
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565313768651.png)
+在http://192.168.2.7:8848/nacos 中自动同步
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565313831198.png)
+暂时实现flow，degrade，
 详情见：
 https://github.com/OneJane/blog
