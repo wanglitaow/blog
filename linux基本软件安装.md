@@ -250,6 +250,27 @@ mvn clean package -DskipTests
 cd sentinel-dashboard/target/
 nohup java -Dserver.port=190 -Dcsp.sentinel.dashboard.server=localhost:190 -Dproject.name=sentinel-dashboard -jar sentinel-dashboard.jar &
 ```
+# 安装黑体字体
+``` dts
+yum  -y  install  fontconfig
+fc-list :lang=zh
+cd /usr/share/fonts && mkdir chinese
+chmod -R 755 /usr/share/fonts/chinese
+cd chinese/ && rz simhei.ttf
+yum -y install ttmkfdir
+ttmkfdir -e /usr/share/X11/fonts/encodings/encodings.dir
+vim /etc/fonts/fonts.conf
+<dir>/usr/share/fonts</dir>
+<dir>/usr/share/fonts/chinese</dir>
+<dir>/usr/share/X11/fonts/Type1</dir> <dir>/usr/share/X11/fonts/TTF</dir> <dir>/usr/local/share/fonts</dir>
+<dir prefix="xdg">fonts</dir>
+<!-- the following element will be removed in the future -->
+<dir>~/.fonts</dir>
+
+fc-cache
+fc-list :lang=zh
+```
+
 # RocketMQ
 
 ``` 
