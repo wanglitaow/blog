@@ -264,7 +264,7 @@ docker push 192.168.2.5:5000/codewj-redis-cluster
 version: '3'
 services:
   redis1:
-    image: 192.168.2.5:5000/codewj-redis-cluster
+    image: 192.168.2.7:5000/onejane-redis-cluster
     container_name: redis1
     network_mode: host
     restart: always
@@ -277,7 +277,7 @@ services:
 
 
   redis2:
-    image: 192.168.2.5:5000/codewj-redis-cluster
+    image: 192.168.2.7:5000/onejane-redis-cluster
     container_name: redis2
     network_mode: host
     restart: always
@@ -290,7 +290,7 @@ services:
 
 
   redis3:
-    image: 192.168.2.5:5000/codewj-redis-cluster
+    image: 192.168.2.7:5000/onejane-redis-cluster
     container_name: redis3
     network_mode: host
     restart: always
@@ -305,7 +305,7 @@ services:
 version: '3'
 services:
   redis1:
-    image: 192.168.2.5:5000/codewj-redis-cluster
+    image: 192.168.2.7:5000/onejane-redis-cluster
     network_mode: host
     container_name: redis4
     restart: always
@@ -318,7 +318,7 @@ services:
 
 
   redis2:
-    image: 192.168.2.5:5000/codewj-redis-cluster
+    image: 192.168.2.7:5000/onejane-redis-cluster
     network_mode: host
     container_name: redis5
     restart: always
@@ -331,7 +331,7 @@ services:
 
 
   redis3:
-    image: 192.168.2.5:5000/codewj-redis-cluster
+    image: 192.168.2.7:5000/onejane-redis-cluster
     network_mode: host
     container_name: redis6
     restart: always
