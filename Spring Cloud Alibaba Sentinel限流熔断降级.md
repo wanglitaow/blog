@@ -211,5 +211,248 @@ com.ht.micro.record.service.dubbo.provider.controller.ProviderController
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565255315318.png)
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565255392581.png)
 显示抛出是10个异常，然后返回结果是熔断处理方法返回结果
+
+# 流控规则
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565256038192.png)
+# 降级规则
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565256058092.png)
+timeWindow为熔断恢复时间
+熔断模式，当熔断触发后，需要等待timewindow时间，再关闭熔断器。
+- 0 根据rt时间，当超过指定规则的时间连续超过5笔，则触发熔断。
+- 1 根据异常比例熔断 DEGRADE_GRADE_EXCEPTION_RATIO
+- 2 根据单位时间内异常总数做熔断
+# 热点规则
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565256075475.png)
+# 系统规则
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565256088028.png)
+# 授权规则
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565256102707.png)
+
+# Sentinel整合Nacos动态发布
+
+``` crmsh
+git clone https://github.com/alibaba/Sentinel.git
+cd Sentinel/sentinel-dashboard
+```
+vim pom.xml
+   
+
+``` xml
+     <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+            <!--<scope>test</scope>-->
+        </dependency>
+```
+com.alibaba.csp.sentinel.dashboard.rule.nacos.NacosConfigConstant
+
+``` processing
+public final class NacosConfigConstant {
+
+    public static final String GROUP_ID = "DEFAULT_GROUP";
+
+    public static final String FLOW_DATA_ID_POSTFIX = "-flow-rules";
+    public static final String PARAM_FLOW_DATA_ID_POSTFIX = "-param-flow-rules";
+    public static final String DEGRADE_DATA_ID_POSTFIX = "-degrade-rules";
+    public static final String SYSTEM_DATA_ID_POSTFIX = "-system-rules";
+    public static final String AUTHORITY_DATA_ID_POSTFIX = "-authority-rules";
+
+}
+```
+com.alibaba.csp.sentinel.dashboard.rule.nacos.NacosConfigProperties
+
+``` typescript
+@Component
+public class NacosConfigProperties {
+
+    @Value("${houyi.nacos.server.ip}")
+    private String ip;
+
+    @Value("${houyi.nacos.server.port}")
+    private String port;
+
+    @Value("${houyi.nacos.server.namespace}")
+    private String namespace;
+
+    @Value("${houyi.nacos.server.group-id}")
+    private String groupId;
+
+    public String getIp() {
+        return ip;
+    }
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+    public String getPort() {
+        return port;
+    }
+    public void setPort(String port) {
+        this.port = port;
+    }
+    public String getNamespace() {
+        return namespace;
+    }
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    public String getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+    public String getServerAddr() {
+        return this.getIp()+":"+this.getPort();
+    }
+    @Override
+    public String toString() {
+        return "NacosConfigProperties [ip=" + ip + ", port=" + port + ", namespace="
+                + namespace + ", groupId=" + groupId + "]";
+    }
+}
+```
+com.alibaba.csp.sentinel.dashboard.rule.nacos.NacosConfig
+
+``` aspectj
+@Configuration
+public class NacosConfig {
+
+    @Autowired
+    private NacosConfigProperties nacosConfigProperties;
+
+    @Bean
+    public ConfigService nacosConfigService() throws Exception {
+        Properties properties = new Properties();
+        properties.put(PropertyKeyConst.SERVER_ADDR, nacosConfigProperties.getServerAddr());
+        if(nacosConfigProperties.getNamespace() != null && !"".equals(nacosConfigProperties.getNamespace()))
+            properties.put(PropertyKeyConst.NAMESPACE, nacosConfigProperties.getNamespace());
+        return ConfigFactory.createConfigService(properties);
+    }
+}
+```
+application.properties
+
+``` stylus
+houyi.nacos.server.ip=192.168.2.7
+houyi.nacos.server.port=8848
+houyi.nacos.server.namespace=
+houyi.nacos.server.group-id=DEFAULT_GROUP
+```
+## FlowRule
+com.alibaba.csp.sentinel.dashboard.rule.nacos.FlowRuleNacosPublisher
+``` groovy
+@Component("flowRuleNacosPublisher")
+public class FlowRuleNacosPublisher implements DynamicRulePublisher<List<FlowRuleEntity>> {
+
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired
+    private NacosConfigProperties nacosConfigProperties;
+
+    @Override
+    public void publish(String app, List<FlowRuleEntity> rules) throws Exception {
+        AssertUtil.notEmpty(app, "app name cannot be empty");
+        if (rules == null) {
+            return;
+        }
+        configService.publishConfig(app + NacosConfigConstant.FLOW_DATA_ID_POSTFIX,
+                nacosConfigProperties.getGroupId(),
+                JSON.toJSONString(rules.stream().map(FlowRuleEntity::toRule).collect(Collectors.toList())));
+    }
+}
+```
+com.alibaba.csp.sentinel.dashboard.rule.nacos.FlowRuleNacosProvider
+
+``` groovy
+@Component("flowRuleNacosProvider")
+public class FlowRuleNacosProvider implements DynamicRuleProvider<List<FlowRuleEntity>> {
+
+    private static Logger logger = LoggerFactory.getLogger(FlowRuleNacosProvider.class);
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired
+    private NacosConfigProperties nacosConfigProperties;
+
+    @Override
+    public List<FlowRuleEntity> getRules(String appName) throws Exception {
+        String rulesStr = configService.getConfig(appName + NacosConfigConstant.FLOW_DATA_ID_POSTFIX,
+                nacosConfigProperties.getGroupId(), 3000);
+        logger.info("nacosConfigProperties{}:", nacosConfigProperties);
+        logger.info("从Nacos中获取到限流规则信息{}", rulesStr);
+        if (StringUtil.isEmpty(rulesStr)) {
+            return new ArrayList<>();
+        }
+        List<FlowRule> rules = RuleUtils.parseFlowRule(rulesStr);
+
+        if (rules != null) {
+            return rules.stream().map(rule -> FlowRuleEntity.fromFlowRule(appName, nacosConfigProperties.getIp(), Integer.valueOf(nacosConfigProperties.getPort()), rule))
+                    .collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+}
+```
+com.alibaba.csp.sentinel.dashboard.controller.FlowControllerV1
+将原始HTTP调用改为对应的Provider及Publisher
+去除
+ 
+
+``` aspectj
+@Autowired
+    private SentinelApiClient sentinelApiClient;
+```
+新增Qualifier和Component值保持一致
+  
+
+``` less
+@Autowired
+    @Qualifier("flowRuleNacosProvider")
+    private DynamicRuleProvider<List<FlowRuleEntity>> provider;
+    @Autowired
+    @Qualifier("flowRuleNacosPublisher")
+    private DynamicRulePublisher<List<FlowRuleEntity>> publisher;
+@GetMapping("/rules")
+    public Result<List<FlowRuleEntity>> apiQueryMachineRules(HttpServletRequest request,
+                                                             @RequestParam String app,
+                                                             @RequestParam String ip,
+                                                             @RequestParam Integer port) {
+        AuthUser authUser = authService.getAuthUser(request);
+        authUser.authTarget(app, PrivilegeType.READ_RULE);
+
+        if (StringUtil.isEmpty(app)) {
+            return Result.ofFail(-1, "app can't be null or empty");
+        }
+        if (StringUtil.isEmpty(ip)) {
+            return Result.ofFail(-1, "ip can't be null or empty");
+        }
+        if (port == null) {
+            return Result.ofFail(-1, "port can't be null");
+        }
+        try {
+            List<FlowRuleEntity> rules = provider.getRules(app);
+            rules = repository.saveAll(rules);
+            return Result.ofSuccess(rules);
+        } catch (Throwable throwable) {
+            logger.error("Error when querying flow rules", throwable);
+            return Result.ofThrowable(-1, throwable);
+        }
+    }	
+    private boolean publishRules(String app, String ip, Integer port) {
+        List<FlowRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
+        try {
+            publisher.publish(app, rules);
+            logger.info("添加限流规则成功{}", JSON.toJSONString(rules.stream().map(FlowRuleEntity::toRule).collect(Collectors.toList())));
+            return true;
+        } catch (Exception e) {
+            logger.info("添加限流规则失败{}",JSON.toJSONString(rules.stream().map(FlowRuleEntity::toRule).collect(Collectors.toList())));
+            e.printStackTrace();
+            return false;
+        }
+    }	
+```
+
 详情见：
 https://github.com/OneJane/blog
