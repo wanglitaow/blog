@@ -254,6 +254,16 @@ docker tag codewj/redis-cluster:1.0 192.168.2.5:5000/codewj-redis-cluster
 docker push 192.168.2.5:5000/codewj-redis-cluster
 ```
 # Redis
+docker run -d --privileged=true -p 6379:6379 -v $PWD/redis.conf:/etc/redis/redis.conf -v $PWD/data:/data --name redis redis redis-server /etc/redis/redis.conf --appendonly yes
+http://download.redis.io/redis-stable/redis.conf
+
+``` yaml
+bind 0.0.0.0
+port 6379
+daemonize no
+appendonly yes
+protected-mode no
+```
 
 详情见：
 https://github.com/OneJane/blog
