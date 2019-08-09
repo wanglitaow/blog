@@ -29,6 +29,11 @@ yum makecache fast
 yum list docker-ce --showduplicates | sort -r
 yum install -y docker-ce-18.09.5
 systemctl restart docker
+
+yum update -y nss curl libcurl
+curl -L https://github.com/docker/compose/releases/download/1.20.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose --version
 ```
 ## ubuntu
 
