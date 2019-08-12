@@ -69,7 +69,7 @@ http.cors.allow-origin: "*"
 node.master: true
 node.data: true
 discovery.zen.ping.unicast.hosts: ["192.168.2.5:1801","192.168.2.6:1801"]  # 可配置多个
-discovery.zen.minimum_master_nodes: 1
+discovery.zen.minimum_master_nodes: 1 # 集群最少需要有两个 node , 才能保证既可以不脑裂, 又可以高可用
 
 修改/usr/share/elasticsearch/config/jvm.options中-Xms10g	-Xmx10g
 
