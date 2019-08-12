@@ -654,6 +654,25 @@ public class ElasticClient {
         System.out.println(weekSearchResponse.getHits().getTotalHits());
     }	
 ```
+# Q1:重启服务
+PUT http://192.168.2.7:1800/_cluster/settings
 
+``` 
+{
+        "transient" : {
+            "cluster.routing.allocation.enable" : "none"
+        }
+    }
+```
+启动完毕后
+PUT http://192.168.2.7:1800/_cluster/settings
+
+``` 
+{
+        "transient" : {
+            "cluster.routing.allocation.enable" : "all"
+        }
+    }
+```
 详情见：
 https://github.com/OneJane/blog
