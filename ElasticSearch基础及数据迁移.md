@@ -112,6 +112,7 @@ index.blocks.write //设置为 true 可禁用对索引的写入操作。
 index.blocks.metadata // 设置为 true 可禁用索引元数据的读取和写入
 index.mapping.total_fields.limit  //1000 防止字段过多引起崩溃
 curl -XGET http://192.168.2.5:1800/record_set/_mappings?pretty        查看mappings信息
+http://192.168.2.5:1800/_cluster/settings?pretty		查看settings信息
 PUT http:///192.168.2.5:1800/record_set/doc/_mapping    新增字段
 {
     "properties": {
