@@ -78,6 +78,19 @@ systemctl start docker.service
 --restart=always    设置重启docker自动启动容器
 docker update --restart=always es-node2
 docker run -itd myimage:test /bin/bash -c "命令1;命令2"        启动容器自动执行命令
+
+docker export registry > /home/registry.tar        将容器打成tar包
+scp /home/registry.tar root@192.168.2.7:/root
+cat ~/registry.tar | docker import - registry/2.5    将tar包打成镜像
+docker save jdk1.8 > /home/java.tar.gz 导出镜像
+docker load < /home/java.tar.gz 导入镜像
+docker stop sentine1 | xargs docker rm
+docker rm -f redis-slave1|true
+
+docker logs -f -t --since="2018-02-08" --tail=100 CONTAINER_ID	查看指定时间后的日志，只显示最后100行
+docker logs --since 30m CONTAINER_ID	查看最近30分钟的日志
+/var/lib/docker/containers/contain id	下rm -rf *.log		删除docker日志
+
 ```
 > 进入https://homenew.console.aliyun.com/ 搜索容器镜像服务，进入侧边栏的镜像加速器获取自己的Docker加速镜像地址。
 # 安装Registry私服
@@ -176,16 +189,10 @@ ENV PATH $JAVA_HOME/bin:$PATH
 ``` 
 docker commit 6ea1085dfc2a pxc:v1.0        将镜像保存本地
 docker commit -m  "容器说明"   -a  "OneJane"   [CONTAINER ID]  [给新的镜像命名]        将容器打包成镜像
-docker export registry > /home/registry.tar        将容器打成tar包
-scp /home/registry.tar root@192.168.2.7:/root
-cat ~/registry.tar | docker import - registry/2.5    将tar包打成镜像
+
 
 docker tag jdk1.8 192.168.2.5:5000/jdk1.8
 docker push 192.168.2.5:5000/jdk1.8        将镜像推到仓库
-docker save jdk1.8 > /home/java.tar.gz 导出镜像
-docker load < /home/java.tar.gz 导入镜像
-docker stop sentine1 | xargs docker rm
-docker rm -f redis-slave1|true
 ```
 # Redis镜像制作
 vim entrypoint.sh
@@ -266,25 +273,7 @@ protected-mode no
 ```
 
 # 手动部署
-安装黑体字体
-``` dts
-yum  -y  install  fontconfig
-fc-list :lang=zh
-cd /usr/share/fonts && mkdir chinese
-chmod -R 755 /usr/share/fonts/chinese
-cd chinese/ && rz simhei.ttf
-yum -y install ttmkfdir
-ttmkfdir -e /usr/share/X11/fonts/encodings/encodings.dir
-vim /etc/fonts/fonts.conf
-<dir>/usr/share/fonts</dir>
-<dir>/usr/share/fonts/chinese</dir>
-<dir>/usr/share/X11/fonts/Type1</dir> <dir>/usr/share/X11/fonts/TTF</dir> <dir>/usr/local/share/fonts</dir>
-<dir prefix="xdg">fonts</dir>
-<!-- the following element will be removed in the future -->
-<dir>~/.fonts</dir>
-
-fc-cache
-fc-list :lang=zh		
+```		
 
 mvn clean install deploy docker:build -DpushImage
 docker run -di --name=panchip -v /tmp/saas:/tmp/saas --net=host 192.168.2.7:5000/panchip:1.0.0-SNAPSHOT
