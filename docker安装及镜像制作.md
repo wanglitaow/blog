@@ -260,6 +260,15 @@ CMD ["redis-server", "/usr/local/etc/redis.conf"]
 docker tag codewj/redis-cluster:1.0 192.168.2.5:5000/codewj-redis-cluster
 docker push 192.168.2.5:5000/codewj-redis-cluster
 ```
+# 上传到docker hub
+
+``` ebnf
+docker login		输入https://hub.docker.com/账户密码
+docker tag onejane-jdk1.8 onejane/onejane-jdk1.8
+docker push onejane/onejane-jdk1.8:latest
+docker logout
+```
+
 # Redis
 docker run -d --privileged=true -p 6379:6379 -v $PWD/redis.conf:/etc/redis/redis.conf -v $PWD/data:/data --name redis redis redis-server /etc/redis/redis.conf --appendonly yes
 http://download.redis.io/redis-stable/redis.conf
