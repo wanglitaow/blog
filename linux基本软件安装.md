@@ -398,5 +398,9 @@ systemctl restart jenkins
 ```
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564814498470.png)
 
+# Q1:-bash: fork: Cannot allocate memory
+进程数满了,echo 1000000 > /proc/sys/kernel/pid_max,echo "kernel.pid_max=1000000 " >> /etc/sysctl.conf,sysctl -p
+top:展示进程视图，监控服务器进程数值默认进入top时，各进程是按照CPU的占用量来排序的,-f查看实际内存占用量
+
 详情见：
 https://github.com/OneJane/blog
