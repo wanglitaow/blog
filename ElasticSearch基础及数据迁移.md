@@ -675,5 +675,13 @@ PUT http://192.168.2.7:1800/_cluster/settings	重启分片分配
         }
     }
 ```
+# Q2
+Elasticsearch默认安装后设置的内存是1GB，这是远远不够用于生产环境的。
+有两种方式修改Elasticsearch的堆内存：
+
+- 设置环境变量：export ES_HEAP_SIZE=10g 在es启动时会读取该变量；
+- 启动时作为参数传递给es： ./bin/elasticsearch -Xmx10g -Xms10g
+
+
 详情见：
 https://github.com/OneJane/blog
