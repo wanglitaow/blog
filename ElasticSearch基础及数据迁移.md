@@ -656,7 +656,7 @@ public class ElasticClient {
     }	
 ```
 # Q1:重启服务
-PUT http://192.168.2.7:1800/_cluster/settings
+PUT http://192.168.2.7:1800/_cluster/settings 禁止分片分配。这一步阻止 Elasticsearch 再平衡缺失的分片，直到你告诉它可以进行了。
 
 ``` 
 {
@@ -666,7 +666,7 @@ PUT http://192.168.2.7:1800/_cluster/settings
     }
 ```
 启动完毕后
-PUT http://192.168.2.7:1800/_cluster/settings
+PUT http://192.168.2.7:1800/_cluster/settings	重启分片分配
 
 ``` 
 {
