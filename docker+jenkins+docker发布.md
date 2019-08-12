@@ -80,20 +80,21 @@ export app_version="1.0.0-SNAPSHOT"
 sh /usr/local/docker/ht-micro-record/deploy.sh
 
 ``` bash
-#!/bin/bash
 
+#!/bin/bash
+# 判断项目是否在运行
 DATE=`date +%F-%H-%M-%S`
 last_app_name=`echo "$app_name-$app_version-$DATE"`
 if docker ps | grep $app_name;then
   docker stop $app_name
   docker rename $app_name $last_app_name
-  docker run -di --name=$app_name --net=host 192.168.2.5:5000/$app_name:$app_version
-
+  docker run -di --name=$app_name -e JAVA_OPTS='-Xmx3g -Xms3g' --net=host 192.168.2.7:5000/$app_name:$app_version
+# 判断项目是否存在
 elif docker ps -a | grep $app_name;then
   docker start $app_name
 else
-  docker run -di --name=$app_name --net=host 192.168.2.5:5000/$app_name:$app_version
-fi
+  docker run -di --name=$app_name -e JAVA_OPTS='-Xmx3g -Xms3g' --net=host 192.168.2.7:5000/$app_name:$app_version
+
 ```
 
 vim /usr/local/bin/dokill
