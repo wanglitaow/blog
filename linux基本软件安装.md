@@ -397,6 +397,69 @@ systemctl restart jenkins
 新建任务时，丢弃旧的构建，保持构建的天数3，保持构建的最大个数5
 ```
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564814498470.png)
+## 定时删除none的docker镜像
+
+手动执行：docker rmi $(docker images -f "dangling=true" -q)
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565602173041.png)
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1565602184220.png)
+定时构建语法：
+``` 
+每天凌晨2:00跑一次 
+H 2  * * *
+
+每隔5分钟构建一次
+H/5 * * * *
+
+每两小时构建一次
+H H/2 * * *
+
+每天中午12点定时构建一次
+H 12 * * *   或0 12 * * *（0这种写法也被H替代了）
+
+每天下午18点前定时构建一次
+H 18 * * *
+ 
+每15分钟构建一次
+H/15 * * * *   或*/5 * * * *(这种方式已经被第一种替代了，jenkins也不推荐这种写法了)
+ 
+周六到周日，18点-23点，三小时构建一次
+H 18-23/3 * * 6-7 
+```
+shell脚本
+
+``` 
+echo ---------------Clear-Images...------------------
+clearImagesList=$(docker images -f "dangling=true" -q)
+if [ ! -n "$clearImagesList" ]; then
+echo "no images need  clean up."
+else
+docker rmi $(docker images -f "dangling=true" -q)
+echo "clear success."
+fi
+```
+
+# cron
+   
+
+``` lsl
+              每隔5秒执行一次：*/5 * * * * ?
+
+                 每隔1分钟执行一次：0 */1 * * * ?
+
+                 每天23点执行一次：0 0 23 * * ?
+
+                 每天凌晨1点执行一次：0 0 1 * * ?
+
+                 每月1号凌晨1点执行一次：0 0 1 1 * ?
+
+                 每月最后一天23点执行一次：0 0 23 L * ?
+
+                 每周星期天凌晨1点实行一次：0 0 1 ? * L
+
+                 在26分、29分、33分执行一次：0 26,29,33 * * * ?
+
+                 每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
+```
 
 # Q1:-bash: fork: Cannot allocate memory
 进程数满了,echo 1000000 > /proc/sys/kernel/pid_max,echo "kernel.pid_max=1000000 " >> /etc/sysctl.conf,sysctl -p
