@@ -428,6 +428,8 @@ H 18-23/3 * * 6-7
 shell脚本
 
 ``` 
+echo ---------------Stop-Rm-Containers...------------------
+docker stop `docker ps -a| grep expire | awk '{print $1}'`|xargs docker rm 
 echo ---------------Clear-Images...------------------
 clearImagesList=$(docker images -f "dangling=true" -q)
 if [ ! -n "$clearImagesList" ]; then
@@ -436,6 +438,7 @@ else
 docker rmi $(docker images -f "dangling=true" -q)
 echo "clear success."
 fi
+
 ```
 
 # cron
