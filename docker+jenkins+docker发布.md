@@ -83,8 +83,8 @@ sh /usr/local/docker/ht-micro-record/deploy.sh
 
 #!/bin/bash
 # 判断项目是否在运行
-DATE=`date +%F-%H-%M-%S`
-last_app_name=`echo "$app_name-$app_version-$DATE"`
+DATE=`date +%s`
+last_app_name=`echo "$app_name-expire-$DATE"`
 if docker ps | grep $app_name;then
   docker stop $app_name
   docker rename $app_name $last_app_name
@@ -94,6 +94,7 @@ elif docker ps -a | grep $app_name;then
   docker start $app_name
 else
   docker run -di --name=$app_name -e JAVA_OPTS='-Xmx3g -Xms3g' --net=host 192.168.2.7:5000/$app_name:$app_version
+fi
 
 ```
 
