@@ -1793,6 +1793,10 @@ com.ht.micro.record.user.controller.UserController
 -javaagent:E:\Project\ht-micro-record\ht-micro-record-external-skywalking\agent\skywalking-agent.jar
 -Dskywalking.agent.service_name=ht-micro-record-service-user
 -Dskywalking.collector.backend_service=192.168.2.7:11800
+
+-javaagent:E:\Project\hello-spring-cloud-alibaba\hello-spring-cloud-external-skywalking\agent\skywalking-agent.jar
+-Dskywalking.agent.service_name=nacos-consumer-feign
+-Dskywalking.collector.backend_service=192.168.3.229:11800
 ```
 ![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1564815890566.png)
 http://192.168.3.233:9501/user/10 调用服务
