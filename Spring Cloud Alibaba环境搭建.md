@@ -748,8 +748,8 @@ ht-micro-record-external-skywalking/src/main/assembly/assembly.xml
 </assembly>
 ```
 apache-skywalking-apm-incubating-6.0.0-beta.tar.gz解压获取apache-skywalking-apm-bin/agent到ht-micro-record-external-skywalking下
-mvn clean package         获取ht-micro-record-external-skywalking/target/skywalking-6.0.0-Beta.tar.gz
-
+mvn clean package        会在 target 目录下创建名为 skywalking-6.0.0-Beta.tar.gz 的压缩包
+mvn clean install        会在本地仓库目录下创建名为 hello-spring-cloud-external-skywalking-1.0.0-SNAPSHOT-6.0.0-Beta.tar.gz 的压缩包
 ``` 
 mkdir /data2/skywalking
 vim docker-compose.yml
