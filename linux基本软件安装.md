@@ -365,6 +365,28 @@ docker-compose up -d
 docker-compose down
 http://192.168.2.7:8088/
 ```
+# RabbitMQ
+docker-compose.yml
+``` 
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    restart: always
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+```
+docker-compose up -d,5672为rabbitmq的服务端口，15672为rabbitmq的web管理界面端口。
 
 # jenkins
 
