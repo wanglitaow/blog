@@ -88,12 +88,12 @@ last_app_name=`echo "$app_name-expire-$DATE"`
 if docker ps | grep $app_name;then
   docker stop $app_name
   docker rename $app_name $last_app_name
-  docker run -di --name=$app_name -e JAVA_OPTS='-Xmx3g -Xms3g' --net=host 192.168.2.7:5000/$app_name:$app_version
+  docker run -di --name=$app_name -v /opt/template/:/opt/template/ -e JAVA_OPTS='-Xmx3g -Xms3g' --net=host 192.168.2.7:5000/$app_name:$app_version
 # 判断项目是否存在
 elif docker ps -a | grep $app_name;then
   docker start $app_name
 else
-  docker run -di --name=$app_name -e JAVA_OPTS='-Xmx3g -Xms3g' --net=host 192.168.2.7:5000/$app_name:$app_version
+  docker run -di --name=$app_name -v /opt/template/:/opt/template/ -e JAVA_OPTS='-Xmx3g -Xms3g' --net=host 192.168.2.7:5000/$app_name:$app_version
 fi
 
 ```
