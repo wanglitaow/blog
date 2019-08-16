@@ -185,6 +185,26 @@ ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLAS
 ENV PATH $JAVA_HOME/bin:$PATH
 ```
 <kbd>docker build -t='onejane-jdk1.8' .</kbd>
+安装中文环境
+``` dts
+yum  -y  install  fontconfig
+fc-list :lang=zh
+cd /usr/share/fonts && mkdir chinese
+chmod -R 755 /usr/share/fonts/chinese
+cd chinese/ && rz simhei.ttf fs_GB2312.ttf fzxbsjt.ttf
+yum -y install ttmkfdir
+ttmkfdir -e /usr/share/X11/fonts/encodings/encodings.dir
+vim /etc/fonts/fonts.conf
+<dir>/usr/share/fonts</dir>
+<dir>/usr/share/fonts/chinese</dir>
+<dir>/usr/share/X11/fonts/Type1</dir> <dir>/usr/share/X11/fonts/TTF</dir> <dir>/usr/local/share/fonts</dir>
+<dir prefix="xdg">fonts</dir>
+<!-- the following element will be removed in the future -->
+<dir>~/.fonts</dir>
+
+fc-cache
+fc-list :lang=zh
+```
 ## 上传到私服
 
 ``` 
