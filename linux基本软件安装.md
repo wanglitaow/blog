@@ -265,7 +265,7 @@ yum  -y  install  fontconfig
 fc-list :lang=zh
 cd /usr/share/fonts && mkdir chinese
 chmod -R 755 /usr/share/fonts/chinese
-cd chinese/ && rz simhei.ttf
+cd chinese/ && rz simhei.ttf fs_GB2312.ttf fzxbsjt.ttf
 yum -y install ttmkfdir
 ttmkfdir -e /usr/share/X11/fonts/encodings/encodings.dir
 vim /etc/fonts/fonts.conf
