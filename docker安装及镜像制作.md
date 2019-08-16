@@ -184,7 +184,7 @@ ENV JRE_HOME $JAVA_HOME/jre
 ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
 ENV PATH $JAVA_HOME/bin:$PATH
 ```
-<kbd>docker build -t='jdk1.8' .</kbd>
+<kbd>docker build -t='jdk-zh' .</kbd>
 ## 上传到私服
 
 ``` 
