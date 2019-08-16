@@ -184,7 +184,7 @@ ENV JRE_HOME $JAVA_HOME/jre
 ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
 ENV PATH $JAVA_HOME/bin:$PATH
 ```
-<kbd>docker build -t='jdk-zh' .</kbd>
+<kbd>docker build -t='onejane-jdk1.8' .</kbd>
 ## 上传到私服
 
 ``` 
@@ -192,7 +192,7 @@ docker commit 6ea1085dfc2a pxc:v1.0        将镜像保存本地
 docker commit -m  "容器说明"   -a  "OneJane"   [CONTAINER ID]  [给新的镜像命名]        将容器打包成镜像
 
 
-docker tag jdk-zh 192.168.2.7:5000/onejane-jdk1.8
+docker tag onejane-jdk1.8 192.168.2.7:5000/onejane-jdk1.8
 docker push 192.168.2.7:5000/onejane-jdk1.8	       将镜像推到仓库
 ```
 # Redis镜像制作
