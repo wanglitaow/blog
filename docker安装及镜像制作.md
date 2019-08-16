@@ -177,6 +177,7 @@ WORKDIR /usr
 RUN mkdir /usr/local/java
 #ADD 是相对路径jar,把java添加到容器中
 ADD jdk-8u60-linux-x64.tar.gz /usr/local/java/
+ENV LANG C.UTF-8
 #配置java环境变量
 ENV JAVA_HOME /usr/local/java/jdk1.8.0_60
 ENV JRE_HOME $JAVA_HOME/jre
@@ -192,7 +193,7 @@ docker commit -m  "容器说明"   -a  "OneJane"   [CONTAINER ID]  [给新的镜
 
 
 docker tag jdk-zh 192.168.2.7:5000/onejane-jdk1.8
-docker push 192.168.2.7:5000/onejane-jdk1.8       将镜像推到仓库
+docker push 192.168.2.7:5000/onejane-jdk1.8	       将镜像推到仓库
 ```
 # Redis镜像制作
 vim entrypoint.sh
