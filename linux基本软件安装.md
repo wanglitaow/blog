@@ -17,6 +17,15 @@ vim /usr/local/bin/ekill
 ps aux | grep -e $* | grep -v grep | awk '{print $2}' | xargs -i kill {}
 ```
 chmod a+x /usr/local/bin/ekill 通过ekill删除进程
+# Git
+## gitignore无效
+
+``` sql
+git rm -r --cached . 
+git add . 
+git commit -m '.gitignore' 
+git push origin master
+```
 
 # GitLab
 ## 方案1
