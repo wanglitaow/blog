@@ -191,8 +191,8 @@ docker commit 6ea1085dfc2a pxc:v1.0        将镜像保存本地
 docker commit -m  "容器说明"   -a  "OneJane"   [CONTAINER ID]  [给新的镜像命名]        将容器打包成镜像
 
 
-docker tag jdk1.8 192.168.2.5:5000/jdk1.8
-docker push 192.168.2.5:5000/jdk1.8        将镜像推到仓库
+docker tag jdk-zh 192.168.2.7:5000/onejane-jdk1.8
+docker push 192.168.2.7:5000/onejane-jdk1.8       将镜像推到仓库
 ```
 # Redis镜像制作
 vim entrypoint.sh
