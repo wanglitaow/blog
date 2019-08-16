@@ -177,7 +177,7 @@ WORKDIR /usr
 RUN mkdir /usr/local/java
 #ADD 是相对路径jar,把java添加到容器中
 ADD jdk-8u60-linux-x64.tar.gz /usr/local/java/
-ENV LANG C.UTF-8
+ENV LANG en_US.UTF-8
 #配置java环境变量
 ENV JAVA_HOME /usr/local/java/jdk1.8.0_60
 ENV JRE_HOME $JAVA_HOME/jre
