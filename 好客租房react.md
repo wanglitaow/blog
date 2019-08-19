@@ -1,5 +1,6 @@
 @[TOC]
-# mock dva
+# React入门
+## mock dva
 react/config/config.js
 ``` javascript
 export default {
@@ -150,6 +151,285 @@ class  List extends React.Component{
 export default List;
 ```
 umi dev
+# Ant Design 入门
+react/config/config.js
+``` less
+export default {
+    plugins:[
+        ['umi-plugin-react',{
+            dva: true,   //开启dva进行数据分层管理
+            antd: true // 开启Ant Design功能
+        }]
+    ],
+    routes: [{
+        path: '/',
+        component: '../layouts', //配置布局路由
+        routes: [
+            {
+                path: '/',
+                component: './index'
+            },
+            {
+                path: '/myTabs',
+                component: './myTabs'
+            },
+            {
+                path: '/user',
+                routes: [
+                    {
+                        path: '/user/list',
+                        component: './user/UserList'
+                    },
+                    {
+                        path: '/user/add',
+                        component: './user/UserAdd'
+                    }
+                ]
+            }
+        ]
+    }]
+};
+```
+react/mock/MockListData.js
+ 
+
+``` xquery
+   'get /ds/user/list': function (req, res) {
+        res.json([{
+            key: '1',
+            name: '张三1',
+            age: 32,
+            address: '上海市',
+            tags: ['程序员', '帅气'],
+        }, {
+            key: '2',
+            name: '李四2',
+            age: 42,
+            address: '北京市',
+            tags: ['屌丝'],
+        }, {
+            key: '3',
+            name: '王五3',
+            age: 32,
+            address: '杭州市',
+            tags: ['高富帅', '富二代'],
+        }]);
+```
+react/src/models/UserListData.js
+
+``` typescript
+import request from "../util/request";
+
+export default {
+    namespace: 'userList',
+    state: {
+        list: []
+    },
+    effects: {
+        *initData(params, sagaEffects) {
+            const {call, put} = sagaEffects;
+            const url = "/ds/user/list";
+            let data = yield call(request, url);
+            yield put({
+                type : "queryList",
+                data : data
+            });
+        }
+    },
+    reducers: {
+        queryList(state, result) {
+            let data = [...result.data];
+            return { //更新状态值
+                list: data
+            }
+        }
+    }
+}
+```
+
+react/src/layouts/index.js
+
+``` vbscript-html
+import React from 'react';
+import { Layout, Menu, Icon } from 'antd';
+import Link from 'umi/link';
+const { Header, Footer, Sider, Content } = Layout;
+const SubMenu = Menu.SubMenu;
+// layouts/index.js文件将被作为全 局的布局文件。
+class BasicLayout extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            collapsed: true,
+        }
+    }
+    render(){
+        return (
+            <Layout>
+                <Sider width={256} style={{minHeight: '100vh', color: 'white'}}>
+                    <div style={{ height: '32px', background: 'rgba(255,255,255,.2)', margin: '16px'}}/>
+                    <Menu
+                        defaultSelectedKeys={['1']}
+                        defaultOpenKeys={['sub1']}
+                        mode="inline"
+                        theme="dark"
+                        inlineCollapsed={this.state.collapsed}
+                    >
+                        <SubMenu key="sub1" title={<span><Icon type="user"/><span>用户管理</span></span>}>
+                            <Menu.Item key="1"><Link to="/user/add">新增用户</Link></Menu.Item>
+                            <Menu.Item key="2"><Link to="/user/list">新增列表</Link></Menu.Item>
+                        </SubMenu>
+                    </Menu>
+                </Sider>
+                <Layout>
+                    <Header style={{ background: '#fff', textAlign: 'center', padding: 0 }}>Header</Header>
+                    <Content style={{ margin: '24px 16px 0' }}>
+                        <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
+                            { this.props.children }
+                        </div>
+                    </Content>
+                    <Footer style={{ textAlign: 'center' }}>后台系统</Footer>
+                </Layout>
+            </Layout>
+        )
+    }
+}
+export default BasicLayout;
+```
+react/src/pages/MyTabs.js
+
+``` 
+import React from 'react';
+import { Tabs } from 'antd'; // 第一步，导入需要使用的组件
+
+const TabPane = Tabs.TabPane;
+
+function callback(key) {
+    console.log(key);
+}
+
+class MyTabs extends React.Component{
+
+    render(){
+        return (
+            <Tabs defaultActiveKey="1" onChange={callback}>
+                <TabPane tab="Tab 1" key="1">hello antd wo de 第一个 tabs</TabPane>
+                <TabPane tab="Tab 2" key="2">Content of Tab Pane 2</TabPane>
+                <TabPane tab="Tab 3" key="3">Content of Tab Pane 3</TabPane>
+            </Tabs>
+        )
+    }
+
+}
+
+export default MyTabs;
+```
+react/src/pages/user/UserList.js
+
+``` scala
+import React from 'react';
+import { connect } from 'dva';
+
+import {Table, Divider, Tag, Pagination } from 'antd';
+
+const {Column} = Table;
+
+const namespace = 'userList';
+
+@connect((state)=>{
+    return {
+        data : state[namespace].list
+    }
+}, (dispatch) => {
+    return {
+        initData : () => {
+            dispatch({
+                type: namespace + "/initData"
+            });
+        }
+    }
+})
+class UserList extends React.Component {
+
+    componentDidMount(){
+        this.props.initData();
+    }
+
+    render() {
+        return (
+            <div>
+                <Table dataSource={this.props.data} pagination={{position:"bottom",total:500,pageSize:10, defaultCurrent:3}}>
+                    <Column
+                        title="姓名"
+                        dataIndex="name"
+                        key="name"
+                    />
+                    <Column
+                        title="年龄"
+                        dataIndex="age"
+                        key="age"
+                    />
+                    <Column
+                        title="地址"
+                        dataIndex="address"
+                        key="address"
+                    />
+                    <Column
+                        title="标签"
+                        dataIndex="tags"
+                        key="tags"
+                        render={tags => (
+                            <span>
+                                {tags.map(tag => <Tag color="blue" key={tag}>{tag}</Tag>)}
+                            </span>
+                        )}
+                    />
+                    <Column
+                        title="操作"
+                        key="action"
+                        render={(text, record) => (
+                            <span>
+                                <a href="javascript:;">编辑</a>
+                                <Divider type="vertical"/>
+                                <a href="javascript:;">删除</a>
+                            </span>
+                        )}
+                    />
+                </Table>
+            </div>
+        );
+    }
+
+}
+
+export default UserList;
+```
+react/src/pages/user/UserAdd.js
+
+``` scala
+import React from 'react'
+class UserAdd extends React.Component{
+    render(){
+        return (
+            <div>新增用户</div>
+        );
+    }
+
+}
+export default UserAdd;
+```
+react/src/pages/index.js
+
+``` 
+import React from 'react'
+class Index extends React.Component {
+    render(){
+        return <div>首页</div>
+    }
+}
+export default Index;
+// http://localhost:8000/
+```
 
 详情见：
 https://github.com/OneJane/blog
