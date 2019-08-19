@@ -227,7 +227,9 @@
 	npm i yarn tyarn -g    tyarn使用淘宝源
 	tyarn -v  1.16.0      若报错通过yarn global bin获取路径加入Path
 	tyarn global add umi
-	umi     
+	umi        
+	tyarn init -y        多一个package.json
+	umi g page index        生成page文件夹 编辑index.js
 
 index.js
 ``` 
