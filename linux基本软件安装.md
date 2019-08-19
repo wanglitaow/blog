@@ -106,7 +106,8 @@ git:x:1000:1000::/home/git:/usr/bin/git-shell
 ```
 > gitignore无效的解决方案
 
-``` git rm -r --cached .
+``` 
+git rm -r --cached .
 git add .
 git commit -m '.gitignore'
 git push origin master
