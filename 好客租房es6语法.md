@@ -268,5 +268,30 @@ export default Util;
 > tyarn init -y
 	tyarn add umi --dev
 	tyarn add umi-plugin-react --dev
+	
+![enter description here](https://www.github.com/OneJane/blog/raw/master/小书匠/1566195612174.png)	
+
+## umi jsx
+react/config/config.js
+
+``` javascript
+export default {};
+```
+react/src/pages/HelloWorld.js
+
+``` javascript
+export default ()=>{
+    const t=()=>"pig"
+    return (
+        <div>hello world {t()}</div>
+    );
+}
+```
+umi build        转码生成文件 dist\umi.js
+umi dev 访问http://localhost:8000
+
+
+
+
 详情见：
 https://github.com/OneJane/blog
