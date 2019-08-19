@@ -262,6 +262,9 @@ export default Util;
 ```
 > umi dev,通过http://localhost:8000/ 查看控制台
 
-
+# reactjs
+> tyarn init -y
+	tyarn add umi --dev
+	tyarn add umi-plugin-react --dev
 详情见：
 https://github.com/OneJane/blog
