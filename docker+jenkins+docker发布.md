@@ -6,6 +6,7 @@ http://192.168.2.5:181/view/all/newJob 构建一个maven项目ht-micro-record-se
 2.SSH Username with private key Enter Directly,添加gitlab服务器私钥
 
 parent.relativePath修改为<relativePath />，发布单个服务时设定一个空值将始终从仓库中获取，不从本地路径获取
+# 分布式构建
 
 # 基础服务
 
